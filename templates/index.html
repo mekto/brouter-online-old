@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BRouter Online</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/vendors/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/static/app.css">
+  </head>
+  <body>
+    <script id="toolbox-tmpl" type="text/ractive">
+      <section>
+        <label>
+          <input type="text" name="start" placeholder="from" value="<% source %>" on-keydown="search">
+        </label>
+        <label>
+          <input type="text" name="finish" placeholder="destination" value="<% destination %>" on-keydown="search">
+        </label>
+      </section>
+
+      <%#info%>
+      <section>
+        <label>
+          <span class="glyphicon glyphicon-info-sign"></span>
+          Distance: <strong><% info.km %> km</strong>
+        </label>
+      </section>
+      <%/info%>
+    </script>
+    <div id="map"></div>
+
+    <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDrM2ViHjiB7scXKhBXGoVBZb_lytvefNc&amp;sensor=false"></script>
+    <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="//api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.standalone.js"></script>
+    <script src="/static/vendors/Ractive.js"></script>
+    <script src="/static/vendors/superagent.js"></script>
+    <script src="/static/utils.js"></script>
+    <script src="/static/routing.js"></script>
+    <script src="/static/brouter.js"></script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

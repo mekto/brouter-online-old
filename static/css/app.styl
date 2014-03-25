@@ -5,14 +5,14 @@ body { height: 100%; margin: 0; padding: 0; }
 #map { height: 100%; }
 
 #toolbox { width: 240px; margin: 0 10px; pointer-events: auto; }
-#toolbox section { background-color: #fff; margin: 10px 0; 	box-shadow: 0 1px 5px rgba(0,0,0,0.4); border-radius: 5px; }
+#toolbox section { background-color: #fff; margin: 10px 0; 	box-shadow: 0 1px 5px rgba(0,0,0,0.4); border-radius: 1px; }
 #toolbox label { display: block; color: #555; font-weight: normal; border-bottom: 1px solid #ddd; padding: 4px 10px; margin: 0; }
 #toolbox label:last-child { border-bottom: 0 none; }
 #toolbox input[type=text] { border: 0; outline: 0 none; font-weight: normal; width: 200px; }
 
-.loading-line { stroke-dasharray: 7 3; -webkit-animation: dash 2s linear infinite; }
+.loading-line { stroke-dasharray: 7 3; animation: dash 2s linear infinite; }
 
-@-webkit-keyframes dash {
+@keyframes dash {
   to {
     stroke-dashoffset: -70;
   }

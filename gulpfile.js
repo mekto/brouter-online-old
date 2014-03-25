@@ -2,39 +2,46 @@ var gulp = require('gulp'),
     stylus = require('gulp-stylus'),
     livereload = require('gulp-livereload'),
     autoprefixer = require('gulp-autoprefixer'),
-    settings = {
-      useLiveReload: false
-    };
+    browserify = require('gulp-browserify'),
+    debug = false;
+
+
+gulp.task('js', function() {
+  gulp.src('static/js/app.js')
+    .pipe(browserify({debug: debug}))
+    .pipe(gulp.dest('static/build/'));
+});
 
 
 gulp.task('css', function() {
   var task = gulp.src('static/css/app.styl')
-    .pipe(stylus())
+    .pipe(stylus({sourcemaps: debug}))
     .pipe(autoprefixer('last 2 versions'))
-    .pipe(gulp.dest('static/css/'));
+    .pipe(gulp.dest('static/build/'));
 
-  if (settings.useLiveReload)
+  if (debug)
     task.pipe(livereload());
 });
 
 
-gulp.task('devserver', ['config:livereload', 'css'], function() {
+gulp.task('devserver', ['config:debug', 'css', 'js'], function() {
   gulp.watch('static/css/*.styl', ['css']);
+  gulp.watch('static/js/**.js', ['js']);
 
   run('python', ['brouter.py']);
 });
 
 
 /**
-  config tasks
+  config task
 */
-gulp.task('config:livereload', function() {
-  settings.useLiveReload = true;
+gulp.task('config:debug', function() {
+  debug = true;
 });
 
 /**
    utils
 */
 function run(cmd, args) {
-  require('child_process').spawn(cmd, args, { stdio: 'inherit' });
+  require('child_process').spawn(cmd, args, {stdio: 'inherit'});
 }

@@ -1,0 +1,8 @@
+{
+  "browser": true,
+  "node": true,
+  "globals": {
+    "L": false,
+    "google": false
+  }
+}

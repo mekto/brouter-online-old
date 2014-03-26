@@ -10,7 +10,8 @@ var gulp = require('gulp'),
 gulp.task('js', function() {
   gulp.src('static/js/app.js')
     .pipe(browserify({debug: debug}))
-    .on('error', gutil.log)
+      .on('error', gutil.log)
+      .on('error', gutil.beep)
     .pipe(gulp.dest('static/build/'));
 });
 

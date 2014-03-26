@@ -5,6 +5,7 @@ require('./routing');
 
 var request = require('./utils').request,
     Ractive = require('./utils').Ractive,
+    utils = require('./utils'),
     cfg = require('./config');
 
 
@@ -56,27 +57,15 @@ BRouter.prototype = {
   },
 
   initToolbox: function() {
-    var container = document.createElement('div');
-    container.id = 'toolbox';
-    container.addEventListener('click', function(e) { e.stopPropagation(); e.preventDefault(); });
+    this.toolbox = new utils.component('toolbox');
 
     if (!L.Browser.touch) {
       L.DomEvent
-        .disableClickPropagation(container)
-        .disableScrollPropagation(container);
+        .disableClickPropagation(this.toolbox.el)
+        .disableScrollPropagation(this.toolbox.el);
     } else {
-      L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+      L.DomEvent.on(this.toolbox.el, 'click', L.DomEvent.stopPropagation);
     }
-
-    this.toolbox = new Ractive({
-      el: container,
-      template: '#toolbox-tmpl',
-      data: {
-        source: '',
-        destination: '',
-        info: null
-      }
-    });
 
     this.toolbox.on('search', function(e) {
       if (e.original.keyIdentifier == 'Enter') {
@@ -84,7 +73,7 @@ BRouter.prototype = {
       }
     }.bind(this));
 
-    this.addMapControl(container, 'topleft');
+    this.addMapControl(this.toolbox.el, 'topleft');
   },
 
   addMapControl: function(element, position) {

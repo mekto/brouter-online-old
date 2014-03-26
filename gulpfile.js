@@ -3,12 +3,14 @@ var gulp = require('gulp'),
     livereload = require('gulp-livereload'),
     autoprefixer = require('gulp-autoprefixer'),
     browserify = require('gulp-browserify'),
+    gutil = require('gulp-util'),
     debug = false;
 
 
 gulp.task('js', function() {
   gulp.src('static/js/app.js')
     .pipe(browserify({debug: debug}))
+    .on('error', gutil.log)
     .pipe(gulp.dest('static/build/'));
 });
 

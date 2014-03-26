@@ -24,6 +24,13 @@ var BRouter = function() {
 BRouter.prototype = {
   constructor: BRouter.constructor,
 
+  config: {
+    markerColors: {
+      'start': '4a89dc',
+      'finish': '8cc152'
+    }
+  },
+
   initMap: function() {
     this.map = L.map('map', {zoomControl: false}).setView([49, 18], 5);
     this.map.addLayer(this.routeLayer);
@@ -108,7 +115,7 @@ BRouter.prototype = {
     this.geocoder.geocode({address: address}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var marker = L.marker(new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()), {
-          icon: L.mapbox.marker.icon({'marker-color': 'CC0033', 'marker-symbol': 'bicycle'}),
+          icon: L.mapbox.marker.icon({'marker-color': this.config.markerColors[type], 'marker-symbol': 'bicycle'}),
           draggable: true
         });
         this.setMarker(type, marker);

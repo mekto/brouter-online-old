@@ -13,7 +13,7 @@ L.Routing.Line = L.FeatureGroup.extend({
         var styles = [
             {color: 'black', opacity: 0.15, weight: 7},
             {color: 'white', opacity: 0.8, weight: 4},
-            {color: 'orange', opacity: 1, weight: 2}
+            {color: '#FF851B', opacity: 1, weight: 3}
         ];
         this.clearLayers();
 

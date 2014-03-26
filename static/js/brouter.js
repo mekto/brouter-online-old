@@ -4,7 +4,8 @@ require('./routing');
 
 
 var request = require('./utils').request,
-    Ractive = require('./utils').Ractive;
+    Ractive = require('./utils').Ractive,
+    cfg = require('./config');
 
 
 var BRouter = function() {
@@ -39,24 +40,14 @@ BRouter.prototype = {
   },
 
   initLayers: function() {
-    var mapUrls = {
-      cloudmade: 'http://{s}.tile.cloudmade.com/052d8e1c8e9c47038ee7ad0c3a9da06d/{styleId}/256/{z}/{x}/{y}.png',
-      osm: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    };
-    var attributions = {
-      mapbox: '© <a href="http://www.mapbox.com">MapBox</a> Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      cloudmade: 'Map data &copy; 2014 OpenStreetMap contributors, Imagery &copy; 2014 CloudMade',
-      osm: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-    };
-
     var baseLayers = {
-      'MapBox Terrain': L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: attributions.mapbox}),
-      'MapBox Street': L.mapbox.tileLayer('mekto.hj5462ii', {attribution: attributions.mapbox}),
-      'CloudMade': L.tileLayer(mapUrls.cloudmade, {styleId: 997, attribution: attributions.cloudmade}),
-      'OSM': L.tileLayer(mapUrls.osm, {attribution: attributions.osm})
+      'MapBox Terrain': L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: cfg.maps.mapbox.attribution}),
+      'MapBox Street': L.mapbox.tileLayer('mekto.hj5462ii', {attribution: cfg.maps.mapbox.attribution}),
+      'CloudMade': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 997, attribution: cfg.maps.cloudmade.attribution}),
+      'OSM': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution})
     };
     var overlays = {
-      'Motorways': L.tileLayer(mapUrls.cloudmade, {styleId: 46561, attribution: attributions.cloudmade})
+      'Motorways': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution})
     };
     baseLayers['MapBox Terrain'].addTo(this.map);
 

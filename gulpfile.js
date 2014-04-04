@@ -2,32 +2,48 @@ var gulp = require('gulp'),
     stylus = require('gulp-stylus'),
     livereload = require('gulp-livereload'),
     autoprefixer = require('gulp-autoprefixer'),
-    browserify = require('gulp-browserify'),
     gutil = require('gulp-util'),
-    debug = false;
+    webpack = require('webpack'),
+    path = require('path'),
+    config = {
+      debug: false,
+      livereload: false
+    };
 
 
 gulp.task('js', function() {
-  gulp.src('static/js/app.js')
-    .pipe(browserify({debug: debug}))
-      .on('error', gutil.log)
-      .on('error', gutil.beep)
-    .pipe(gulp.dest('static/build/'));
+  var settings = {
+    entry: './static/js/app.js',
+    output: {
+      path: './static/build/',
+      filename: 'app.js'
+    }
+  };
+  if (config.debug) {
+    settings.devtool = 'inline-source-map';
+    settings.debug = true;
+  }
+  webpack(settings, function(error, stats) {
+    if (error)
+      throw new gutil.PluginError('[js]', error);
+    gutil.log('[js]', stats.toString({colors: true}));
+  });
 });
-
 
 gulp.task('css', function() {
   var task = gulp.src('static/css/app.styl')
-    .pipe(stylus({sourcemaps: debug}))
+    .pipe(stylus({sourcemaps: config.debug, use: ['nib']}))
+      .on('error', gutil.log)
+      .on('error', gutil.beep)
     .pipe(autoprefixer('last 2 versions'))
     .pipe(gulp.dest('static/build/'));
 
-  if (debug)
+  if (config.livereload)
     task.pipe(livereload());
 });
 
 
-gulp.task('devserver', ['config:debug', 'css', 'js'], function() {
+gulp.task('devserver', ['config:debug', 'config:livereload', 'css', 'js'], function() {
   gulp.watch('static/css/*.styl', ['css']);
   gulp.watch('static/js/**.js', ['js']);
 
@@ -36,10 +52,13 @@ gulp.task('devserver', ['config:debug', 'css', 'js'], function() {
 
 
 /**
-  config task
+  config tasks
 */
 gulp.task('config:debug', function() {
-  debug = true;
+  config.debug = true;
+});
+gulp.task('config:livereload', function() {
+  config.livereload = true;
 });
 
 /**

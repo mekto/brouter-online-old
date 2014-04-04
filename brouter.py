@@ -30,7 +30,8 @@ def direction(start, finish):
 
     def format(node):
         return {'lng': float(node.getAttribute('lon')),
-                'lat': float(node.getAttribute('lat'))}
+                'lat': float(node.getAttribute('lat')),
+                'ele': float(node.firstChild.firstChild.nodeValue)}
 
     return jsonify({
         'distance': float(info['track-length']) / 1000,

@@ -19,6 +19,7 @@ var BRouter = function() {
   };
   this.routeLayer = L.featureGroup();
   this.line = null;
+  this.elevation = null;
 
   this.initMap();
 };
@@ -54,6 +55,16 @@ BRouter.prototype = {
 
     L.control.layers(baseLayers, overlays).addTo(this.map);
     L.control.zoom({position: 'topright'}).addTo(this.map);
+
+    this.elevation = L.control.elevation({
+      position: "bottomright",
+      theme: "steelblue-theme",
+      width: 500,
+      height: 125,
+      useHeightIndicator: true,
+      collapsed: true  // collapsed mode, show chart on click or mouseover
+    });
+    this.elevation.addTo(this.map);
   },
 
   initToolbox: function() {
@@ -119,10 +130,13 @@ BRouter.prototype = {
 
     var coords = [], i;
     for (i = 0; i < data.coords.length; i++) {
-      coords.push(new L.LatLng(data.coords[i].lat, data.coords[i].lng));
+      var latlng = new L.LatLng(data.coords[i].lat, data.coords[i].lng);
+      latlng.meta = {ele: data.coords[i].ele};
+      coords.push(latlng);
     }
 
     this.line = L.Routing.line(coords);
+    this.elevation.addData(this.line.getPolyline());
     this.routeLayer.addLayer(this.line);
     this.map.fitBounds(this.routeLayer.getBounds());
 
@@ -132,6 +146,7 @@ BRouter.prototype = {
   getDirections: function() {  
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
+      this.elevation.clear();
     }
     this.line = L.polyline([this.markers.start.getLatLng(), this.markers.finish.getLatLng()], {color: '#555', weight: 1, className: 'loading-line'});
     this.routeLayer.addLayer(this.line);

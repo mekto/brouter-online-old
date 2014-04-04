@@ -4,7 +4,7 @@ L.Routing = L.Routing || {};
 
 L.Routing.Line = L.FeatureGroup.extend({
     initialize: function(latlangs, options) {
-        this._layers = {};
+        L.LayerGroup.prototype.initialize.call(this);
         this._options = options;
         this.setLatLangs(latlangs);
     },
@@ -24,9 +24,10 @@ L.Routing.Line = L.FeatureGroup.extend({
         return this;
     },
 
-    getLatLangs: function() {
-        this._lines[0].getLatLngs();
-    }
+    getPolyline: function() {
+        var layers = this.getLayers();
+        return layers[0];
+    },
 });
 
 L.Routing.line = function(latlngs) {

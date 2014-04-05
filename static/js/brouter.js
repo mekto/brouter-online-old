@@ -1,6 +1,7 @@
 'use strict';
 
 require('./routing');
+require('./google');
 
 
 var request = require('./utils').request,
@@ -58,6 +59,9 @@ BRouter.prototype = {
     var baseLayers = {
       'MapBox Terrain': L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: cfg.maps.mapbox.attribution}),
       'MapBox Street': L.mapbox.tileLayer('mekto.hj5462ii', {attribution: cfg.maps.mapbox.attribution}),
+      'Google Road': L.Google.tileLayer('ROADMAP', {attribution: cfg.maps.google.attribution}),
+      'Google Terrain': L.Google.tileLayer('TERRAIN', {attribution: cfg.maps.google.attribution}),
+      'Google Satellite': L.Google.tileLayer('HYBRID', {attribution: cfg.maps.google.attribution}),
       'CloudMade': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 997, attribution: cfg.maps.cloudmade.attribution}),
       'OSM': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution})
     };

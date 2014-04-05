@@ -79,7 +79,7 @@ BRouter.prototype = {
     }
 
     this.toolbox.on('search', function(e) {
-      if (e.original.keyIdentifier == 'Enter') {
+      if (e.original.keyCode === 13) {
         this.search(e.node.name, e.node.value);
       }
     }.bind(this));

@@ -35,6 +35,7 @@ var BRouter = function() {
   this.line = null;
   this.elevation = null;
 
+  this.initStorage();
   this.initMap();
 };
 
@@ -68,10 +69,13 @@ BRouter.prototype = {
     var overlays = {
       'Motorways': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution})
     };
-    baseLayers['MapBox Terrain'].addTo(this.map);
-
     L.control.layers(baseLayers, overlays).addTo(this.map);
     L.control.zoom({position: 'topright'}).addTo(this.map);
+
+    baseLayers[this.storage.activeOverlay].addTo(this.map);
+    this.map.addEventListener('baselayerchange', function(e) {
+      this.storage.activeOverlay = e.name;
+    }.bind(this));
 
     this.elevation = L.control.elevation({
       position: "bottomright",
@@ -116,6 +120,24 @@ BRouter.prototype = {
     });
 
     this.addMapControl(this.toolbox.el, 'topleft');
+  },
+
+  initStorage: function() {
+    this.storage = {};
+    this.storage.define = function define(prop, defaultValue) {
+      Object.defineProperty(this, prop, {
+        get: function() {
+          return window.localStorage.getItem(prop) || defaultValue;
+        },
+        set: function(newValue) {
+          window.localStorage.setItem(prop, newValue);
+        },
+        configurable: true,
+        enumerable: true
+      });
+    };
+
+    this.storage.define('activeOverlay', 'Google Terrain');
   },
 
   addMapControl: function(element, position) {

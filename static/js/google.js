@@ -54,6 +54,11 @@ L.Google = L.Class.extend({
         this._update();
     },
 
+    addTo: function(map) {
+        map.addLayer(this);
+        return this;
+    },
+
     onRemove: function(map) {
         this._map._container.removeChild(this._container);
         //this._container = null;

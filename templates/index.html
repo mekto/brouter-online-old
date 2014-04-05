@@ -9,21 +9,33 @@
   </head>
   <body>
     <script id="toolbox" type="text/ractive">
-      <section>
-        <label>
-          <input type="text" name="start" placeholder="from" value="<% source %>" on-keydown="search">
-        </label>
-        <label>
-          <input type="text" name="finish" placeholder="destination" value="<% destination %>" on-keydown="search">
-        </label>
+      <section class="main">
+        <header>
+          <img src="/static/gfx/bike.svg" class="logo">
+          <strong>BRouter</strong>
+        </header>
+        <div class="inner">
+          <ul>
+            <%#waypoints:i%>
+            <li>
+              <label>
+                <input type="text" value="<% address %>" placeholder="<%#i==0%>Select starting point<%/i%><%#i==waypoints.length-1%>End point<%/i%>" on-keydown="search">
+              </label>
+            </li>
+            <%/waypoints%> 
+          </ul>
+        </div>
+        <footer class="text-right">
+          <button class="btn btn-primary" disabled="<% !canSearch(waypoints) %>" on-click="findRoute">Find route</button>
+        </footer>
       </section>
 
       <%#info%>
       <section>
-        <label>
-          <span class="glyphicon glyphicon-info-sign"></span>
-          Distance: <strong><% info.km %> km</strong>
-        </label>
+        <div class="inner">
+          <% info.start.address %> - <% info.end.address %><br>
+          <strong><% info.km %> km</strong>
+        </div>
       </section>
       <%/info%>
     </script>

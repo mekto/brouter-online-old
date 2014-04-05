@@ -1,19 +1,76 @@
-* { box-sizing: border-box; }
-html { height: 100%; }
-body { height: 100%; margin: 0; padding: 0; }
+@import 'colors'
+@import 'variables'
+@import 'defaults'
+@import 'nib'
 
-#map { height: 100%; }
+*
+  box-sizing: border-box;
+html
+  height: 100%;
+body
+  height: 100%; margin: 0; padding: 0; color: $font-color; font-family: $font-family;
 
-#toolbox { width: 240px; margin: 0 10px; pointer-events: auto; }
-#toolbox section { background-color: #fff; margin: 10px 0; 	box-shadow: 0 1px 5px rgba(0,0,0,0.4); border-radius: 1px; }
-#toolbox label { display: block; color: #555; font-weight: normal; border-bottom: 1px solid #ddd; padding: 4px 10px; margin: 0; }
-#toolbox label:last-child { border-bottom: 0 none; }
-#toolbox input[type=text] { border: 0; outline: 0 none; font-weight: normal; width: 200px; }
+#map
+  size: 100%;
 
-.loading-line { stroke-dasharray: 7 3; animation: dash 2s linear infinite; }
+#toolbox
+  width: 260px; margin: 10px; pointer-events: auto;
+  header
+    display: flex; align-items: center; border-bottom: 1px solid $border-color;
+    .logo
+      margin: 0; padding: 0 2px; width: 36px; border-right: 1px solid $border-color; color: white;
+    strong
+      display: inline-block; padding: 0 7px;
+  footer
+    border-top: 1px solid $border-color; padding: ($line-height / 2) ($gutter / 2);
+  section
+    background-color: #fff; box-shadow: 1px 1px 1px rgba(black, .2); margin-bottom: ($line-height / 2);
+    > .inner
+      padding: ($line-height / 2) ($gutter / 2);
+  input[type=text]
+    width: 100%; padding: 6px 6px; border: $border-color; color: $font-color; box-shadow: inset 1px 1px 1px -1px rgba(black, .1);
+    &:focus
+      border-color: $accent-color;
 
-@keyframes dash {
-  to {
+.loading-line
+  stroke-dasharray: 7 3; animation: dash 2s linear infinite;
+
+.text-right
+  text-align: right;
+
+@keyframes dash
+  to
     stroke-dashoffset: -70;
-  }
-}
+
+.btn
+  $color = green
+  $border = darken(saturate($color, 9%), 14%)
+  $stop-gradient = darken(saturate($color, 9%), 11%)
+  $inset-shadow = lighten(desaturate($color, 8%), 15%);
+  $text-shadow = darken(saturate($color, 15%), 18%);
+
+  border: 1px solid $border;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 0 $inset-shadow;
+  color: white;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: normal;
+  background-image: linear-gradient($color, $stop-gradient);
+  padding: 7px 18px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 $text-shadow;
+  background-clip: padding-box;
+
+  &:hover:not(:disabled)
+    $color-hover = darken(desaturate($color, 4%), 5%);
+    $inset-shadow-hover = lighten(desaturate($color, 7%), 5%);
+    $stop-gradient-hover = darken(saturate($color, 8%), 14%);
+
+    box-shadow: inset 0 1px 0 0 $inset-shadow-hover;
+    background-image: linear-gradient($color-hover, $stop-gradient-hover);
+    cursor: pointer;
+
+  &:disabled
+    opacity: .5;
+

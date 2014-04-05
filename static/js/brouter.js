@@ -9,14 +9,27 @@ var request = require('./utils').request,
     cfg = require('./config');
 
 
+function Waypoint() {
+  this.address = '';
+  this.marker = null;
+}
+
+Waypoint.prototype = {
+  constructor: Waypoint.constructor,
+
+  getInfo: function() {
+    return {
+      address: this.address
+    };
+  }
+};
+
+
 var BRouter = function() {
   this.geocoder = new google.maps.Geocoder();
 
   this.map = null;
-  this.markers = {
-    'start': null,
-    'finish': null
-  };
+  this.waypoints = [new Waypoint(), new Waypoint()];
   this.routeLayer = L.featureGroup();
   this.line = null;
   this.elevation = null;
@@ -28,9 +41,9 @@ BRouter.prototype = {
   constructor: BRouter.constructor,
 
   config: {
-    markerColors: {
-      'start': '4a89dc',
-      'finish': '8cc152'
+    markerIconStyles: {
+      'first': {'marker-symbol': 'bicycle', 'marker-color': '4a89dc'},
+      'last': {'marker-symbol': 'embassy', 'marker-color': '8cc152'}
     }
   },
 
@@ -78,11 +91,25 @@ BRouter.prototype = {
       L.DomEvent.on(this.toolbox.el, 'click', L.DomEvent.stopPropagation);
     }
 
-    this.toolbox.on('search', function(e) {
-      if (e.original.keyCode === 13) {
-        this.search(e.node.name, e.node.value);
-      }
-    }.bind(this));
+    this.toolbox.on({
+      search: function(e) {
+        if (e.original.keyCode === 13) {
+          var waypoint = e.context;
+          this.search(waypoint);
+        }
+      }.bind(this),
+
+      findRoute: function(e) {
+        this.findRoute();
+      }.bind(this)
+    });
+
+    this.toolbox.set({
+      waypoints: this.waypoints,
+
+      /* helper methods */
+      canSearch: this.canSearch,
+    });
 
     this.addMapControl(this.toolbox.el, 'topleft');
   },
@@ -95,35 +122,35 @@ BRouter.prototype = {
     new Control().addTo(this.map);
   },
 
-  setMarker: function(type, newMarker) {
-    var marker = this.markers[type];
-    if (marker)
-       this.routeLayer.removeLayer(marker);
-    this.markers[type] = newMarker;
+  canSearch: function() {
+    for (var i = 0; i < this.waypoints.length; i++) {
+      if (!this.waypoints[i].marker)
+        return false;
+    }
+    return true;
   },
 
-  search: function(type, address) {
-    this.geocoder.geocode({address: address}, function(results, status) {
+  search: function(waypoint) {
+    this.geocoder.geocode({address: waypoint.address}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
-        var marker = L.marker(new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()), {
-          icon: L.mapbox.marker.icon({'marker-color': this.config.markerColors[type], 'marker-symbol': 'bicycle'}),
+        var waypointIndex = this.waypoints.indexOf(waypoint);
+
+        if (waypoint.marker)
+          this.routeLayer.removeLayer(waypoint.marker);
+
+        waypoint.marker = L.marker(new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()), {
+          icon: L.mapbox.marker.icon(this.config.markerIconStyles[(waypointIndex === 0) ? 'first' : 'last']),
           draggable: true
         });
-        this.setMarker(type, marker);
-        marker.addTo(this.routeLayer);
-        this.map.panTo(marker.getLatLng());
+        waypoint.marker.addTo(this.routeLayer);
+        this.map.panTo(waypoint.marker.getLatLng());
 
-        if (this.hasStartAndFinish())
-          this.getDirections();
+        this.toolbox.update();
       }
     }.bind(this));
   },
 
-  hasStartAndFinish: function() {
-    return this.markers.start && this.markers.finish;
-  },
-
-  setDirectionPath: function(data) {
+  setDirectionPath: function(data, startWaypoint, endWaypoint) {
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
@@ -140,25 +167,32 @@ BRouter.prototype = {
     this.routeLayer.addLayer(this.line);
     this.map.fitBounds(this.routeLayer.getBounds());
 
-    this.toolbox.set('info', {km: data.distance});
+    this.toolbox.set('info', {
+      start: startWaypoint,
+      end: endWaypoint,
+      km: data.distance
+    });
   },
 
-  getDirections: function() {  
+  findRoute: function() {  
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
       this.elevation.clear();
     }
-    this.line = L.polyline([this.markers.start.getLatLng(), this.markers.finish.getLatLng()], {color: '#555', weight: 1, className: 'loading-line'});
+    var latlngs = this.waypoints.map(function(waypoint) {
+      return waypoint.marker.getLatLng();
+    });
+    this.line = L.polyline(latlngs, {color: '#555', weight: 1, className: 'loading-line'});
     this.routeLayer.addLayer(this.line);
     this.map.fitBounds(this.routeLayer.getBounds());
 
     this.toolbox.set('info', null);
 
-    var start = this.markers.start.getLatLng(),
-        finish = this.markers.finish.getLatLng();
+    var start = this.waypoints[0].marker.getLatLng(),
+        finish = this.waypoints[1].marker.getLatLng();
     request.get('/dir/' + start.lat + ',' + start.lng + '/' + finish.lat + ',' + finish.lng)
       .end(function(response) {
-        this.setDirectionPath(response.body);
+        this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo());
       }.bind(this));
   }
 };

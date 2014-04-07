@@ -44,10 +44,10 @@ gulp.task('css', function() {
 
 
 gulp.task('devserver', ['config:debug', 'config:livereload', 'css', 'js'], function() {
+  run('python', ['brouter.py']);
+
   gulp.watch('static/css/*.styl', ['css']);
   gulp.watch('static/js/**.js', ['js']);
-
-  run('python', ['brouter.py']);
 });
 
 

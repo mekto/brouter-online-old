@@ -70,7 +70,7 @@ BRouter.prototype = {
       'OpenMapSurfer': L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution})
     };
     var overlays = {
-      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution}),
+      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution}),
       'Motorways': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution})
     };
     L.control.layers(baseLayers, overlays).addTo(this.map);

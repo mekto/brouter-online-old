@@ -64,9 +64,13 @@ BRouter.prototype = {
       'Google Terrain': L.Google.tileLayer('TERRAIN', {attribution: cfg.maps.google.attribution}),
       'Google Satellite': L.Google.tileLayer('HYBRID', {attribution: cfg.maps.google.attribution}),
       'CloudMade': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 997, attribution: cfg.maps.cloudmade.attribution}),
-      'OSM': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution})
+      'OSM': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution}),
+      'OSM Cycle': L.tileLayer(cfg.maps.osmcycle.url, {attribution: cfg.maps.osmcycle.attribution}),
+      'OSM Transport': L.tileLayer(cfg.maps.osmtransport.url, {attribution: cfg.maps.osmtransport.attribution}),
+      'OpenMapSurfer': L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution})
     };
     var overlays = {
+      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution}),
       'Motorways': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution})
     };
     L.control.layers(baseLayers, overlays).addTo(this.map);

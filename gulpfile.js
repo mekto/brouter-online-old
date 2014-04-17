@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
     stylus = require('gulp-stylus'),
+    nib = require('nib'),
     livereload = require('gulp-livereload'),
     autoprefixer = require('gulp-autoprefixer'),
     gutil = require('gulp-util'),
@@ -32,7 +33,7 @@ gulp.task('js', function() {
 
 gulp.task('css', function() {
   var task = gulp.src('static/css/app.styl')
-    .pipe(stylus({sourcemaps: config.debug, use: ['nib']}))
+    .pipe(stylus({sourcemaps: config.debug, use: [nib()]}))
       .on('error', gutil.log)
       .on('error', gutil.beep)
     .pipe(autoprefixer('last 2 versions'))

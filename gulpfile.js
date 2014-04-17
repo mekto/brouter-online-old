@@ -52,6 +52,9 @@ gulp.task('devserver', ['config:debug', 'config:livereload', 'css', 'js'], funct
 });
 
 
+gulp.task('build', ['css', 'js']);
+
+
 /**
   config tasks
 */

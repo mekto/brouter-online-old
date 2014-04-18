@@ -11,15 +11,15 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/dir/<start>/<finish>')
-def direction(start, finish):
+@app.route('/dir/<start>/<finish>/<profile>')
+def direction(start, finish, profile):
     start_lat, start_lng = start.split(',')
     finish_lat, finish_lng = finish.split(',')
 
     coords = '{start_lng}_{start_lat}_{finish_lng}_{finish_lat}_{profile}' \
         .format(start_lng=start_lng, start_lat=start_lat,
                 finish_lng=finish_lng, finish_lat=finish_lat,
-                profile='trekking_0')
+                profile=profile)
 
     url = 'http://h2096617.stratoserver.net/cgi-bin/brouter.sh?coords=' + coords
     response = requests.get(url)

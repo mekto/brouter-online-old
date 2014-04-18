@@ -14,7 +14,7 @@ body
   size: 100%;
 
 #toolbox
-  width: 260px; margin: 10px; pointer-events: auto;
+  width: 270px; margin: 10px; pointer-events: auto;
   header
     display: flex; align-items: center; border-bottom: 1px solid $border-color;
     .logo
@@ -22,15 +22,20 @@ body
     strong
       display: inline-block; padding: 0 7px;
   footer
-    border-top: 1px solid $border-color; padding: ($line-height / 2) ($gutter / 2);
+    border-top: 1px solid $border-color; padding: ($line-height / 2) ($gutter / 2); align-items: center;
   section
     background-color: #fff; box-shadow: 1px 1px 1px rgba(black, .2); margin-bottom: ($line-height / 2);
     > .inner
       padding: ($line-height / 2) ($gutter / 2);
   input[type=text]
-    width: 100%; padding: 6px 6px; border: $border-color; color: $font-color; box-shadow: inset 1px 1px 1px -1px rgba(black, .1);
+    width: 100%; padding: 7px 7px; margin: 4px 0; border: $border-color; color: $font-color; box-shadow: inset 1px 1px 1px -1px rgba(black, .1);
     &:focus
       border-color: $accent-color;
+  .main footer
+    display: flex;
+
+.stretch
+  flex: 1;
 
 .loading-line
   stroke-dasharray: 7 3; animation: dash 2s linear infinite;

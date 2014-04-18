@@ -25,7 +25,21 @@
             <%/waypoints%> 
           </ul>
         </div>
-        <footer class="text-right">
+        <footer>
+          <div class="stretch">
+            <select value="<% profile %>">
+              <%# profiles:name %> 
+                <option value="<% name %>"><% . %></option>
+              <%/ profiles %>
+            </select>
+
+            <select value="<% alternative %>">
+              <%# alternatives %> 
+                <option value="<% . %>"><% . %></option>
+              <%/ alternatives %>
+            </select>
+          </div>
+
           <button class="btn btn-primary" disabled="<% !canSearch(waypoints) %>" on-click="findRoute">Find route</button>
         </footer>
       </section>

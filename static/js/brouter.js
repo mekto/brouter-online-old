@@ -25,7 +25,6 @@ Waypoint.prototype = {
   }
 };
 
-
 var BRouter = function() {
   this.geocoder = new google.maps.Geocoder();
 
@@ -118,9 +117,19 @@ BRouter.prototype = {
 
     this.toolbox.set({
       waypoints: this.waypoints,
+      profiles: {
+        'trekking': 'Trekking',
+        'fastbike': 'Fastbike',
+        'safety': 'Safty',
+        'shortest': 'Shortest',
+        'car-test': 'Car'
+      },
+      alternatives: [0, 1, 2, 3],
+      profile: 'trekking',
+      alternative: 0,
 
       /* helper methods */
-      canSearch: this.canSearch,
+      canSearch: this.canSearch
     });
 
     this.addMapControl(this.toolbox.el, 'topleft');
@@ -219,8 +228,11 @@ BRouter.prototype = {
     this.toolbox.set('info', null);
 
     var start = this.waypoints[0].marker.getLatLng(),
-        finish = this.waypoints[1].marker.getLatLng();
-    request.get('/dir/' + start.lat + ',' + start.lng + '/' + finish.lat + ',' + finish.lng)
+        finish = this.waypoints[1].marker.getLatLng(),
+        profile = this.toolbox.get('profile'),
+        alternative = this.toolbox.get('alternative');
+
+    request.get('/dir/' + start.lat + ',' + start.lng + '/' + finish.lat + ',' + finish.lng + '/' + profile + '_' + alternative)
       .end(function(response) {
         this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo());
       }.bind(this));

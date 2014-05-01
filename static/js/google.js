@@ -18,7 +18,8 @@ L.Google = L.Class.extend({
         noWrap: false,
         mapOptions: {
             backgroundColor: '#dddddd'
-        }
+        },
+        layer: null
     },
 
     // Possible types: SATELLITE, ROADMAP, HYBRID, TERRAIN
@@ -122,6 +123,15 @@ L.Google = L.Class.extend({
             styles: this.options.mapOptions.styles,
             backgroundColor: this.options.mapOptions.backgroundColor
         });
+
+        if (this.options.layer === 'bicycling') {
+            var bikeLayer = new google.maps.BicyclingLayer();
+            bikeLayer.setMap(map);
+        }
+        if (this.options.layer === 'transit') {
+            var transitLayer = new google.maps.TransitLayer();
+            transitLayer.setMap(map);
+        }
 
         var _this = this;
         this._reposition = google.maps.event.addListenerOnce(map, "center_changed",

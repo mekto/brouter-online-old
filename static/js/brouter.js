@@ -62,15 +62,17 @@ BRouter.prototype = {
       'Google Road': L.Google.tileLayer('ROADMAP', {attribution: cfg.maps.google.attribution}),
       'Google Terrain': L.Google.tileLayer('TERRAIN', {attribution: cfg.maps.google.attribution}),
       'Google Satellite': L.Google.tileLayer('HYBRID', {attribution: cfg.maps.google.attribution}),
-      'CloudMade': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 997, attribution: cfg.maps.cloudmade.attribution}),
+      'Google Bicycling': L.Google.tileLayer('ROADMAP', {layer: 'bicycling', attribution: cfg.maps.google.attribution}),
+      'Google Transit': L.Google.tileLayer('ROADMAP', {layer: 'transit', attribution: cfg.maps.google.attribution}),
       'OSM': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution}),
       'OSM Cycle': L.tileLayer(cfg.maps.osmcycle.url, {attribution: cfg.maps.osmcycle.attribution}),
       'OSM Transport': L.tileLayer(cfg.maps.osmtransport.url, {attribution: cfg.maps.osmtransport.attribution}),
-      'OpenMapSurfer': L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution})
+      'OpenMapSurfer': L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution}),
+      'Map1.eu (Europe)': L.tileLayer(cfg.maps.map1eu.url, {attribution: cfg.maps.map1eu.attribution})
     };
     var overlays = {
-      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution}),
-      'Motorways': L.tileLayer(cfg.maps.cloudmade.url, {styleId: 46561, attribution: cfg.maps.cloudmade.attribution})
+      'Cycling Routes': L.tileLayer(cfg.maps.waymarkedtrails.url, {attribution: cfg.maps.waymarkedtrails.attribution}),
+      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution})
     };
     L.control.layers(baseLayers, overlays).addTo(this.map);
     L.control.zoom({position: 'topright'}).addTo(this.map);

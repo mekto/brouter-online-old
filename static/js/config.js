@@ -34,7 +34,7 @@ module.exports = {
     },
     map1eu: {
       url: 'http://alpha.map1.eu/tiles/{z}/{x}/{y}.jpg',
-      attribution: ''
+      attribution: '© <a href="http://map1.eu">map1.eu</a>'
     }
   }
 };

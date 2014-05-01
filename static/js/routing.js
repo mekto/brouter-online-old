@@ -4,16 +4,13 @@ L.Routing = L.Routing || {};
 
 L.Routing.Line = L.FeatureGroup.extend({
     initialize: function(latlangs, options) {
-        L.LayerGroup.prototype.initialize.call(this);
-        this._options = options;
+        L.LayerGroup.prototype.initialize.call(this, options);
         this.setLatLangs(latlangs);
     },
 
     setLatLangs: function(latlngs) {
         var styles = [
-            {color: 'black', opacity: 0.15, weight: 7},
-            {color: 'white', opacity: 0.8, weight: 4},
-            {color: '#FF851B', opacity: 1, weight: 3}
+            {color: '#f22', opacity: 0.9, weight: 4}
         ];
         this.clearLayers();
 

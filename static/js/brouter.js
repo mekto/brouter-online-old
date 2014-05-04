@@ -2,6 +2,7 @@
 
 require('./routing');
 require('./google');
+require('./vendors/leaflet-zoomslider/L.Control.Zoomslider');
 
 
 var request = require('./utils').request,
@@ -75,7 +76,7 @@ BRouter.prototype = {
       'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution})
     };
     L.control.layers(baseLayers, overlays).addTo(this.map);
-    L.control.zoom({position: 'topright'}).addTo(this.map);
+    L.control.zoomslider({position: 'topright'}).addTo(this.map);
 
     baseLayers[this.storage.activeOverlay].addTo(this.map);
     this.map.addEventListener('baselayerchange', function(e) {

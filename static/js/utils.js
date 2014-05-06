@@ -12,7 +12,7 @@ function component(id, settings) {
   options.el = document.createElement('div');
   options.el.id = id;
 
-  templateEl.remove();
+  templateEl.parentNode.removeChild(templateEl);
   return new Ractive(options);
 }
 

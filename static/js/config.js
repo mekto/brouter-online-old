@@ -31,10 +31,6 @@ module.exports = {
     waymarkedtrails: {
       url: 'http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
       attirbution: 'Overlay from cycling.waymarkedtrails.org, Terms of Use: http://cycling.waymarkedtrails.org/en/help/legal'
-    },
-    map1eu: {
-      url: 'http://alpha.map1.eu/tiles/{z}/{x}/{y}.jpg',
-      attribution: '© <a href="http://map1.eu">map1.eu</a>'
     }
   }
 };

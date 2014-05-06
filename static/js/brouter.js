@@ -2,6 +2,7 @@
 
 require('./routing');
 require('./google');
+require('./vendors/leaflet-elevation/Leaflet.Elevation-0.0.2.src');
 require('./vendors/leaflet-zoomslider/L.Control.Zoomslider');
 
 
@@ -50,10 +51,27 @@ BRouter.prototype = {
   },
 
   initMap: function() {
-    this.map = L.map('map', {zoomControl: false}).setView([49, 18], 5);
+    this.map = L.map('map', {zoomControl: false, minZoom: 2}).setView([49, 18], 4);
     this.map.addLayer(this.routeLayer);
     this.initToolbox();
     this.initLayers();
+    this.initDelayedClick();
+  },
+
+  initDelayedClick: function() {
+    var delayedClick = null;
+
+    this.map.addEventListener('click', function(e) {
+      if (delayedClick === null) {
+        delayedClick = setTimeout(function() {
+          this.map.fire('delayedclick', e);
+          delayedClick = null;
+        }.bind(this), 500);
+      } else {
+        clearTimeout(delayedClick);
+        delayedClick = null;
+      }
+    }.bind(this));
   },
 
   initLayers: function() {
@@ -81,6 +99,57 @@ BRouter.prototype = {
     baseLayers[this.storage.activeOverlay].addTo(this.map);
     this.map.addEventListener('baselayerchange', function(e) {
       this.storage.activeOverlay = e.name;
+    }.bind(this));
+
+    this.map.addEventListener('contextmenu', function(e) {
+      e.originalEvent.preventDefault();
+    });
+
+    this.map.addEventListener('click', function(e) {
+      if (e.originalEvent.shiftKey) {
+        this.map.setView(e.latlng, this.map.getZoom() + 3);
+      }
+    }.bind(this));
+    this.map.addEventListener('delayedclick', function(e) {
+      var latlng = e.latlng;
+
+      if (!e.originalEvent.shiftKey) {
+        this.lookupAddress(latlng, function(result) {
+          var content = new Ractive({
+            el: document.createElement('div'),
+            template: '#address-popup',
+            data: {
+              address: this.getAddressComponents(result),
+              latlng: e.latlng,
+              format: function(value) {
+                return value.toFixed(6);
+              }
+            }
+          });
+          content.on({
+            'setFrom': function(e) {
+              var waypoint = this.waypoints[0];
+              waypoint.address = this.formatAddress(result);
+              this.setMarker(waypoint, latlng);
+              this.map.closePopup();
+              e.original.preventDefault();
+            }.bind(this),
+
+            'setTo': function(e) {
+              var waypoint = this.waypoints[this.waypoints.length - 1];
+              waypoint.address = this.formatAddress(result);
+              this.setMarker(waypoint, latlng);
+              this.map.closePopup();
+              e.original.preventDefault();
+            }.bind(this),
+          });
+
+          L.popup({ minWidth: 200 })
+            .setLatLng(e.latlng)
+            .setContent(content.el)
+            .openOn(this.map);
+        }.bind(this));
+      }
     }.bind(this));
 
     this.elevation = L.control.elevation({
@@ -175,21 +244,63 @@ BRouter.prototype = {
   search: function(waypoint) {
     this.geocoder.geocode({address: waypoint.address}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
-        var waypointIndex = this.waypoints.indexOf(waypoint);
-
-        if (waypoint.marker)
-          this.routeLayer.removeLayer(waypoint.marker);
-
-        waypoint.marker = L.marker(new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()), {
-          icon: L.mapbox.marker.icon(this.config.markerIconStyles[(waypointIndex === 0) ? 'first' : 'last']),
-          draggable: true
-        });
-        waypoint.marker.addTo(this.routeLayer);
-        this.map.panTo(waypoint.marker.getLatLng());
-
-        this.toolbox.update();
+        this.setMarker(waypoint, new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
       }
     }.bind(this));
+  },
+
+  setMarker: function(waypoint, latlng) {
+    var waypointIndex = this.waypoints.indexOf(waypoint);
+
+    if (waypoint.marker)
+      this.routeLayer.removeLayer(waypoint.marker);
+
+    waypoint.marker = L.marker(latlng, {
+      icon: L.mapbox.marker.icon(this.config.markerIconStyles[(waypointIndex === 0) ? 'first' : 'last']),
+      draggable: true
+    });
+    waypoint.marker.waypoint = waypoint;  // reverse mapping
+    waypoint.marker.addTo(this.routeLayer);
+    this.map.panTo(waypoint.marker.getLatLng());
+
+    waypoint.marker.addEventListener('dragend', function(e) {
+      this.searchAddressReverse(e.target);
+    }.bind(this));
+
+    this.toolbox.update();
+  },
+
+  lookupAddress: function(latlng, callback) {
+    latlng = new google.maps.LatLng(latlng.lat, latlng.lng);
+    this.geocoder.geocode({'latLng': latlng}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+          callback(results[0]);
+        }
+      }
+    }.bind(this));
+  },
+
+  searchAddressReverse: function(marker) {
+    var latlng = marker.getLatLng();
+    this.lookupAddress(latlng, function(result) {
+      marker.waypoint.address = this.formatAddress(result);
+      this.toolbox.update();
+    }.bind(this));
+  },
+
+  getAddressComponents: function(geocoderResult) {
+    var components = geocoderResult.formatted_address.split(',').map(function(component) {
+      return component.trim();
+    });
+    if (components.length > 1) {
+      components.pop(); 
+    }
+    return components;
+  },
+
+  formatAddress: function(geocoderResult) {
+    return this.getAddressComponents(geocoderResult).join(', ');
   },
 
   setDirectionPath: function(data, startWaypoint, endWaypoint) {
@@ -217,6 +328,7 @@ BRouter.prototype = {
   },
 
   findRoute: function() {  
+    this.map.closePopup();
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
       this.elevation.clear();

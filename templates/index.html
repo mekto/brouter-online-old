@@ -23,19 +23,19 @@
                 <input type="text" value="<% address %>" placeholder="<%#i==0%>Select starting point<%/i%><%#i==waypoints.length-1%>End point<%/i%>" on-keydown="search">
               </label>
             </li>
-            <%/waypoints%> 
+            <%/waypoints%>
           </ul>
         </div>
         <footer>
           <div class="stretch">
             <select value="<% profile %>">
-              <%# profiles:name %> 
+              <%# profiles:name %>
                 <option value="<% name %>"><% . %></option>
               <%/ profiles %>
             </select>
 
             <select value="<% alternative %>">
-              <%# alternatives %> 
+              <%# alternatives %>
                 <option value="<% . %>"><% . %></option>
               <%/ alternatives %>
             </select>
@@ -48,8 +48,10 @@
       <%#info%>
       <section>
         <div class="inner">
-          <% info.start.address %> - <% info.end.address %><br>
-          <strong><% info.km %> km</strong>
+          <%# waypoints:i %>
+            <%# i %> - <%/ i %><% address %>
+          <%/ waypoints %>
+          <br><strong><% info.km %> km</strong>
         </div>
       </section>
       <%/info%>

@@ -309,7 +309,7 @@ BRouter.prototype = {
     return this.getAddressComponents(geocoderResult).join(', ');
   },
 
-  setDirectionPath: function(data, startWaypoint, endWaypoint, options) {
+  setDirectionPath: function(data, options) {
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
@@ -329,8 +329,9 @@ BRouter.prototype = {
     }
 
     this.toolbox.set('info', {
-      start: startWaypoint,
-      end: endWaypoint,
+      waypoints: this.waypoints.map(function(waypoint) {
+        return waypoint.getInfo();
+      }),
       km: data.distance
     });
   },
@@ -378,7 +379,7 @@ BRouter.prototype = {
         format: 'gpx'
       })
       .end(function(response) {
-        this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo(), options);
+        this.setDirectionPath(response.body, options);
         this.request = null;
       }.bind(this));
   }

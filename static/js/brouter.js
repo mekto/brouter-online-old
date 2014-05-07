@@ -324,7 +324,7 @@ BRouter.prototype = {
     this.line = L.Routing.line(coords);
     this.elevation.addData(this.line.getPolyline());
     this.routeLayer.addLayer(this.line);
-    if (options.fitBound()) {
+    if (options.fitBounds) {
       this.map.fitBounds(this.routeLayer.getBounds());
     }
 

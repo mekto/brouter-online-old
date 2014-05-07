@@ -18,15 +18,16 @@ def direction():
     conn = httplib.HTTPConnection('h2096617.stratoserver.net:443')
     conn.request('GET', '/brouter?' + url_unquote(request.query_string))
     resp = conn.getresponse()
+    text = resp.read()
 
-    domtree = minidom.parseString(resp.read())
+    domtree = minidom.parseString(text)
     nodes = domtree.getElementsByTagName('trkpt')
     info = get_info(domtree.firstChild.data)
 
     def format(node):
         return {'lng': float(node.getAttribute('lon')),
                 'lat': float(node.getAttribute('lat')),
-                'ele': float(node.firstChild.firstChild.nodeValue)}
+                'ele': float(node.firstChild.firstChild.nodeValue) if node.firstChild else None}
 
     return jsonify({
         'distance': float(info['track-length']) / 1000,

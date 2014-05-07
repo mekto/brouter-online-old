@@ -21,7 +21,7 @@ module.exports = {
     },
     hillshade: {
       // ASTER GDEM & SRTM Hillshade layer
-      url: 'hhttp://openmapsurfer.uni-hd.de/tiles/asterh/x={x}&y={y}&z={z}',
+      url: 'http://openmapsurfer.uni-hd.de/tiles/asterh/x={x}&y={y}&z={z}',
       attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://openmapsurfer.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a>'
     },
     waymarkedtrails: {

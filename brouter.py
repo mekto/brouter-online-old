@@ -5,7 +5,13 @@ from flask import Flask, jsonify, render_template, request
 from werkzeug.urls import url_unquote
 
 
+class Config(object):
+    BROUTER_HOST = 'localhost:17777'
+
+
 app = Flask(__name__)
+app.config.from_object(Config)
+app.config.from_pyfile('config.py', silent=True)
 
 
 @app.route('/')
@@ -15,7 +21,7 @@ def index():
 
 @app.route('/dir')
 def direction():
-    conn = httplib.HTTPConnection('h2096617.stratoserver.net:443')
+    conn = httplib.HTTPConnection(app.config['BROUTER_HOST'])
     conn.request('GET', '/brouter?' + url_unquote(request.query_string))
     resp = conn.getresponse()
     text = resp.read()

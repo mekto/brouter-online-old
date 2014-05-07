@@ -346,12 +346,22 @@ BRouter.prototype = {
 
     this.toolbox.set('info', null);
 
-    var start = this.waypoints[0].marker.getLatLng(),
-        finish = this.waypoints[1].marker.getLatLng(),
-        profile = this.toolbox.get('profile'),
-        alternative = this.toolbox.get('alternative');
+    var profile = this.toolbox.get('profile'),
+        alternative = this.toolbox.get('alternative'),
+        lonlats;
 
-    request.get('/dir/' + start.lat + ',' + start.lng + '/' + finish.lat + ',' + finish.lng + '/' + profile + '_' + alternative)
+    lonlats = this.waypoints.map(function(waypoint) {
+      var latlng = waypoint.marker.getLatLng();
+      return [latlng.lng, latlng.lat].join(',');
+    }).join('|');
+
+    request.get('/dir')
+      .query({
+        lonlats: lonlats,
+        profile: profile,
+        alternativeidx: alternative,
+        format: 'gpx'
+      })
       .end(function(response) {
         this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo());
       }.bind(this));

@@ -1,7 +1,8 @@
 from xml.dom import minidom
+import httplib
 
-import requests
-from flask import Flask, jsonify, render_template, url_for
+from flask import Flask, jsonify, render_template, request
+from werkzeug.urls import url_unquote
 
 
 app = Flask(__name__)
@@ -11,20 +12,14 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/dir/<start>/<finish>/<profile>')
-def direction(start, finish, profile):
-    start_lat, start_lng = start.split(',')
-    finish_lat, finish_lng = finish.split(',')
 
-    coords = '{start_lng}_{start_lat}_{finish_lng}_{finish_lat}_{profile}' \
-        .format(start_lng=start_lng, start_lat=start_lat,
-                finish_lng=finish_lng, finish_lat=finish_lat,
-                profile=profile)
+@app.route('/dir')
+def direction():
+    conn = httplib.HTTPConnection('h2096617.stratoserver.net:443')
+    conn.request('GET', '/brouter?' + url_unquote(request.query_string))
+    resp = conn.getresponse()
 
-    url = 'http://h2096617.stratoserver.net/cgi-bin/brouter.sh?coords=' + coords
-    response = requests.get(url)
-
-    domtree = minidom.parseString(response.text)
+    domtree = minidom.parseString(resp.read())
     nodes = domtree.getElementsByTagName('trkpt')
     info = get_info(domtree.firstChild.data)
 
@@ -40,8 +35,8 @@ def direction(start, finish, profile):
 
 
 def get_info(gpx_comment_data):
-	# Example data:
-    # track-length = 7969 filtered ascend = 12 plain-ascend = 3 cost=9083 
+    # Example data:
+    # track-length = 7969 filtered ascend = 12 plain-ascend = 3 cost=9083
     info = gpx_comment_data.strip().replace(' = ', '=')
     info = info.replace('filtered ascend', 'filtered-ascend')
     info = info.split(' ')

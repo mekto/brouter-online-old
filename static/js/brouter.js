@@ -35,6 +35,7 @@ var BRouter = function() {
   this.routeLayer = L.featureGroup();
   this.line = null;
   this.elevation = null;
+  this.request = null;
 
   this.initStorage();
   this.initMap();
@@ -205,7 +206,7 @@ BRouter.prototype = {
       alternative: 0,
 
       /* helper methods */
-      canSearch: this.canSearch
+      canSearch: this.canSearch.bind(this)
     });
 
     this.addMapControl(this.toolbox.el, 'topleft');
@@ -238,10 +239,9 @@ BRouter.prototype = {
   },
 
   canSearch: function() {
-    for (var i = 0; i < this.waypoints.length; i++) {
-      if (!this.waypoints[i].marker)
-        return false;
-    }
+    return this.waypoints.every(function(waypoint) {
+      return waypoint.marker
+    });
     return true;
   },
 
@@ -300,7 +300,7 @@ BRouter.prototype = {
       return component.trim();
     });
     if (components.length > 1) {
-      components.pop(); 
+      components.pop();
     }
     return components;
   },
@@ -335,7 +335,7 @@ BRouter.prototype = {
     });
   },
 
-  findRoute: function(options) {  
+  findRoute: function(options) {
     if (!this.canSearch()) {
       return;
     }
@@ -366,7 +366,11 @@ BRouter.prototype = {
       return [latlng.lng, latlng.lat].join(',');
     }).join('|');
 
-    request.get('/dir')
+    if (this.request) {
+      this.request.abort();
+      this.request = null;
+    }
+    this.request = request.get('/dir')
       .query({
         lonlats: lonlats,
         profile: profile,
@@ -375,6 +379,7 @@ BRouter.prototype = {
       })
       .end(function(response) {
         this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo(), options);
+        this.request = null;
       }.bind(this));
   }
 };

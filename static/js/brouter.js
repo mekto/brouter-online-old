@@ -272,6 +272,7 @@ BRouter.prototype = {
     }.bind(this));
 
     this.toolbox.update();
+    this.findRoute();
   },
 
   lookupAddress: function(latlng, callback) {
@@ -290,6 +291,7 @@ BRouter.prototype = {
     this.lookupAddress(latlng, function(result) {
       marker.waypoint.address = this.formatAddress(result);
       this.toolbox.update();
+      this.findRoute({ fitBounds: false });
     }.bind(this));
   },
 
@@ -307,7 +309,7 @@ BRouter.prototype = {
     return this.getAddressComponents(geocoderResult).join(', ');
   },
 
-  setDirectionPath: function(data, startWaypoint, endWaypoint) {
+  setDirectionPath: function(data, startWaypoint, endWaypoint, options) {
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
@@ -322,7 +324,9 @@ BRouter.prototype = {
     this.line = L.Routing.line(coords);
     this.elevation.addData(this.line.getPolyline());
     this.routeLayer.addLayer(this.line);
-    this.map.fitBounds(this.routeLayer.getBounds());
+    if (options.fitBound()) {
+      this.map.fitBounds(this.routeLayer.getBounds());
+    }
 
     this.toolbox.set('info', {
       start: startWaypoint,
@@ -331,7 +335,12 @@ BRouter.prototype = {
     });
   },
 
-  findRoute: function() {  
+  findRoute: function(options) {  
+    if (!this.canSearch()) {
+      return;
+    }
+    options = L.extend({ fitBounds: true }, options || {});
+
     this.map.closePopup();
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
@@ -342,7 +351,9 @@ BRouter.prototype = {
     });
     this.line = L.polyline(latlngs, {color: '#555', weight: 1, className: 'loading-line'});
     this.routeLayer.addLayer(this.line);
-    this.map.fitBounds(this.routeLayer.getBounds());
+    if (options.fitBounds) {
+      this.map.fitBounds(this.routeLayer.getBounds());
+    }
 
     this.toolbox.set('info', null);
 
@@ -363,7 +374,7 @@ BRouter.prototype = {
         format: 'gpx'
       })
       .end(function(response) {
-        this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo());
+        this.setDirectionPath(response.body, this.waypoints[0].getInfo(), this.waypoints[1].getInfo(), options);
       }.bind(this));
   }
 };

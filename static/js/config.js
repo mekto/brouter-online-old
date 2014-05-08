@@ -22,11 +22,11 @@ module.exports = {
     hillshade: {
       // ASTER GDEM & SRTM Hillshade layer
       url: 'http://openmapsurfer.uni-hd.de/tiles/asterh/x={x}&y={y}&z={z}',
-      attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://openmapsurfer.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a>'
+      attribution: 'Overlay © <a href="http://openmapsurfer.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a>'
     },
     waymarkedtrails: {
       url: 'http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
-      attirbution: 'Overlay © <a href="http://cycling.waymarkedtrails.org">cycling.waymarkedtrails.org</a>'
+      attribution: 'Overlay © <a href="http://cycling.waymarkedtrails.org">cycling.waymarkedtrails.org</a>'
     },
     google: {
       attribution: 'Map data and tiles © <a href="http://www.google.com">Google</a>'

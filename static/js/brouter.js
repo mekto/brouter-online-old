@@ -4,6 +4,7 @@ require('./routing');
 require('./google');
 require('./vendors/leaflet-elevation/Leaflet.Elevation-0.0.2.src');
 require('./vendors/leaflet-zoomslider/L.Control.Zoomslider');
+require('./vendors/leaflet-locate/L.Control.Locate');
 
 
 var request = require('./utils').request,
@@ -94,6 +95,7 @@ BRouter.prototype = {
       'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution})
     };
     L.control.layers(baseLayers, overlays).addTo(this.map);
+    L.control.locate({position: 'topright', locateOptions: {maxZoom: '17'}}).addTo(this.map);
     L.control.zoomslider({position: 'topright'}).addTo(this.map);
 
     this.map.attributionControl.setPrefix('');

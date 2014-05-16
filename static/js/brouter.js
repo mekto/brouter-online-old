@@ -7,8 +7,8 @@ require('./vendors/leaflet-zoomslider/L.Control.Zoomslider');
 require('./vendors/leaflet-locate/L.Control.Locate');
 
 
-var request = require('./utils').request,
-    Ractive = require('./utils').Ractive,
+var request = require('superagent'),
+    Ractive = require('Ractive'),
     utils = require('./utils'),
     cfg = require('./config');
 

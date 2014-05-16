@@ -18,6 +18,9 @@ gulp.task('js', function() {
     output: {
       path: './static/build/',
       filename: 'app.js'
+    },
+    resolve: {
+      modulesDirectories: ['vendors']
     }
   };
   if (config.debug) {

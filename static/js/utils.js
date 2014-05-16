@@ -1,3 +1,6 @@
+var Ractive = require('Ractive');
+
+
 /*
   @param {string} id: id of <script type="text/ractive"> tag
 */
@@ -15,7 +18,5 @@ function component(id, settings) {
 
 
 module.exports = {
-  Ractive: Ractive,
-  request: superagent,
   component: component
 };

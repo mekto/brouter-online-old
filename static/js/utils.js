@@ -1,6 +1,3 @@
-Ractive.delimiters = ['<%', '%>'];
-
-
 /*
   @param {string} id: id of <script type="text/ractive"> tag
 */

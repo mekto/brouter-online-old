@@ -1,0 +1,47 @@
+<div id="toolbox">
+  <section class="main">
+    <header>
+      <img src="/static/gfx/bike.svg" class="logo"/>
+      <strong>BRouter</strong>
+    </header>
+    <div class="inner">
+      <ul>
+        {{#waypoints:i}}
+        <li>
+          <label>
+            <input type="text" value="{{ address }}" placeholder="{{#i==0}}Select starting point{{/i}}{{#i==waypoints.length-1}}End point{{/i}}" on-keydown="search">
+          </label>
+        </li>
+        {{/waypoints}}
+      </ul>
+    </div>
+    <footer>
+      <div class="stretch">
+        <select value="{{ profile }}">
+          {{#profiles:name}}
+            <option value="{{ name }}">{{ . }}</option>
+          {{/profiles}}
+        </select>
+
+        <select value="{{ alternative }}">
+          {{#alternatives}}
+            <option value="{{ . }}">{{ . }}</option>
+          {{/alternatives}}
+        </select>
+      </div>
+
+      <button class="btn btn-primary" disabled="{{ !canSearch(waypoints) }}" on-click="findRoute">Find route</button>
+    </footer>
+  </section>
+
+  {{#info}}
+  <section>
+    <div class="inner">
+      {{#waypoints:i}}
+        {{#i}} - {{/i}}{{ address }}
+      {{/waypoints}}
+      <br><strong>{{ info.km }} km</strong>
+    </div>
+  </section>
+  {{/info}}
+</div>

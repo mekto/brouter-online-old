@@ -9,7 +9,6 @@ require('./vendors/leaflet-locate/L.Control.Locate');
 
 var request = require('superagent'),
     Ractive = require('Ractive'),
-    utils = require('./utils'),
     cfg = require('./config');
 
 
@@ -124,7 +123,7 @@ BRouter.prototype = {
         this.lookupAddress(latlng, function(result) {
           var content = new Ractive({
             el: document.createElement('div'),
-            template: '#address-popup',
+            template: require('./templates/address-popup.html'),
             data: {
               address: this.getAddressComponents(result),
               latlng: e.latlng,
@@ -171,8 +170,6 @@ BRouter.prototype = {
   },
 
   initToolbox: function() {
-    this.toolbox = new utils.component('toolbox');
-
     if (!L.Browser.touch) {
       L.DomEvent
         .disableClickPropagation(this.toolbox.el)
@@ -180,6 +177,11 @@ BRouter.prototype = {
     } else {
       L.DomEvent.on(this.toolbox.el, 'click', L.DomEvent.stopPropagation);
     }
+    this.toolbox = new Ractive({
+      template: require('./templates/toolbox.html'),
+      el: document.createElement('div')
+    });
+
 
     this.toolbox.on({
       search: function(e) {

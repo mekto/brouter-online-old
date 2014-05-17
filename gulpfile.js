@@ -54,6 +54,7 @@ gulp.task('css', function() {
 
 gulp.task('devserver', ['config:debug', 'config:livereload', 'css', 'js'], function() {
   run('python', ['brouter.py']);
+  run('./engine/standalone/server.sh');
 
   gulp.watch('static/css/*.styl', ['css']);
   gulp.watch(['static/js/**/*.js', 'static/js/**/*.html'], ['js']);
@@ -76,6 +77,12 @@ gulp.task('config:livereload', function() {
 /**
    utils
 */
-function run(cmd, args) {
-  require('child_process').spawn(cmd, args, {stdio: 'inherit'});
+function run(command, args) {
+  var cwd = path.resolve(path.dirname(command)),
+      cmd = command,
+      args = args || [];
+  if (command.charAt(0) === '.')
+    cmd = path.resolve(command);
+
+  require('child_process').spawn(cmd, args, {cwd: cwd, stdio: 'inherit'});
 }

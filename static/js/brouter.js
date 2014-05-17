@@ -170,18 +170,14 @@ BRouter.prototype = {
   },
 
   initToolbox: function() {
-    if (!L.Browser.touch) {
-      L.DomEvent
-        .disableClickPropagation(this.toolbox.el)
-        .disableScrollPropagation(this.toolbox.el);
-    } else {
-      L.DomEvent.on(this.toolbox.el, 'click', L.DomEvent.stopPropagation);
-    }
     this.toolbox = new Ractive({
       template: require('./templates/toolbox.html'),
       el: document.createElement('div')
     });
 
+    L.DomEvent
+      .disableClickPropagation(this.toolbox.el)
+      .disableScrollPropagation(this.toolbox.el);
 
     this.toolbox.on({
       search: function(e) {

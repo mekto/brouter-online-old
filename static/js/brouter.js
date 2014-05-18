@@ -52,23 +52,6 @@ BRouter.prototype = {
     this.map.addLayer(this.routeLayer);
     this.initToolbox();
     this.initLayers();
-    this.initDelayedClick();
-  },
-
-  initDelayedClick: function() {
-    var delayedClick = null;
-
-    this.map.addEventListener('click', function(e) {
-      if (delayedClick === null) {
-        delayedClick = setTimeout(function() {
-          this.map.fire('delayedclick', e);
-          delayedClick = null;
-        }.bind(this), 500);
-      } else {
-        clearTimeout(delayedClick);
-        delayedClick = null;
-      }
-    }.bind(this));
   },
 
   initLayers: function() {
@@ -84,55 +67,18 @@ BRouter.prototype = {
       this.storage.activeOverlay = e.name;
     }.bind(this));
 
-    this.map.addEventListener('contextmenu', function(e) {
-      e.originalEvent.preventDefault();
-    });
-
     this.map.addEventListener('click', function(e) {
       if (e.originalEvent.shiftKey) {
         this.map.setZoomAround(e.latlng, this.map.getZoom() + 3);
       }
-    }.bind(this));
-    this.map.addEventListener('delayedclick', function(e) {
-      var latlng = e.latlng;
-
-      if (!e.originalEvent.shiftKey) {
-        this.lookupAddress(latlng, function(result) {
-          var content = new Ractive({
-            el: document.createElement('div'),
-            template: require('./templates/address-popup.html'),
-            data: {
-              address: this.getAddressComponents(result),
-              latlng: e.latlng,
-              format: function(value) {
-                return value.toFixed(6);
-              }
-            }
-          });
-          content.on({
-            'setFrom': function(e) {
-              var waypoint = this.waypoints[0];
-              waypoint.address = this.formatAddress(result);
-              this.setMarker(waypoint, latlng);
-              this.map.closePopup();
-              e.original.preventDefault();
-            }.bind(this),
-
-            'setTo': function(e) {
-              var waypoint = this.waypoints[this.waypoints.length - 1];
-              waypoint.address = this.formatAddress(result);
-              this.setMarker(waypoint, latlng);
-              this.map.closePopup();
-              e.original.preventDefault();
-            }.bind(this),
-          });
-
-          L.popup({ minWidth: 200 })
-            .setLatLng(e.latlng)
-            .setContent(content.el)
-            .openOn(this.map);
-        }.bind(this));
+      if (e.originalEvent.ctrlKey) {
+        this.showLocationPopup(e.latlng);
       }
+    }.bind(this));
+
+    this.map.addEventListener('contextmenu', function(e) {
+      this.showLocationPopup(e.latlng);
+      e.originalEvent.preventDefault();
     }.bind(this));
   },
 
@@ -195,6 +141,44 @@ BRouter.prototype = {
     };
 
     this.storage.define('activeOverlay', 'OpenMapSurfer');
+  },
+
+  showLocationPopup: function(latlng) {
+    this.lookupAddress(latlng, function(result) {
+      var content = new Ractive({
+        el: document.createElement('div'),
+        template: require('./templates/address-popup.html'),
+        data: {
+          address: this.getAddressComponents(result),
+          latlng: latlng,
+          format: function(value) {
+            return value.toFixed(6);
+          }
+        }
+      });
+      content.on({
+        'setFrom': function(e) {
+          var waypoint = this.waypoints[0];
+          waypoint.address = this.formatAddress(result);
+          this.setMarker(waypoint, latlng);
+          this.map.closePopup();
+          e.original.preventDefault();
+        }.bind(this),
+
+        'setTo': function(e) {
+          var waypoint = this.waypoints[this.waypoints.length - 1];
+          waypoint.address = this.formatAddress(result);
+          this.setMarker(waypoint, latlng);
+          this.map.closePopup();
+          e.original.preventDefault();
+        }.bind(this),
+      });
+
+      L.popup({ minWidth: 200 })
+        .setLatLng(latlng)
+        .setContent(content.el)
+        .openOn(this.map);
+    }.bind(this));
   },
 
   addMapControl: function(element, position) {

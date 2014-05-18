@@ -28,9 +28,6 @@ var Layers = L.Control.extend({
       name: 'MapBox Terrain',
       constructor: function() { return L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: cfg.maps.mapbox.attribution}); }
     }, {
-      name: 'MapBox Street',
-      constructor: function() { return L.mapbox.tileLayer('mekto.hj5462ii', {attribution: cfg.maps.mapbox.attribution}); }
-    }, {
       name: 'Google Road',
       variants: ['bicycling', 'transit'],
       constructor: function(variant) { return L.Google.tileLayer('ROADMAP', {layer: variant, attribution: cfg.maps.google.attribution}); }

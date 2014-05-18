@@ -2,14 +2,11 @@
 
 require('./routing');
 require('./google');
-require('./vendors/leaflet-elevation/Leaflet.Elevation-0.0.2.src');
-require('./vendors/leaflet-zoomslider/L.Control.Zoomslider');
-require('./vendors/leaflet-locate/L.Control.Locate');
 
 
 var request = require('superagent'),
     Ractive = require('Ractive'),
-    cfg = require('./config');
+    Controls = require('./controls.js');
 
 
 function Waypoint() {
@@ -34,7 +31,6 @@ var BRouter = function() {
   this.waypoints = [new Waypoint(), new Waypoint()];
   this.routeLayer = L.featureGroup();
   this.line = null;
-  this.elevation = null;
   this.request = null;
 
   this.initStorage();
@@ -76,33 +72,14 @@ BRouter.prototype = {
   },
 
   initLayers: function() {
-    var baseLayers = {
-      'OpenMapSurfer': L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution}),
-      'OSM Standard': L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution}),
-      'OSM Cycle': L.tileLayer(cfg.maps.osmcycle.url, {attribution: cfg.maps.osmcycle.attribution}),
-      'OSM Transport': L.tileLayer(cfg.maps.osmtransport.url, {attribution: cfg.maps.osmtransport.attribution}),
-      'MapBox Terrain': L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: cfg.maps.mapbox.attribution}),
-      'MapBox Street': L.mapbox.tileLayer('mekto.hj5462ii', {attribution: cfg.maps.mapbox.attribution}),
-      'Google Road': L.Google.tileLayer('ROADMAP', {attribution: cfg.maps.google.attribution}),
-      'Google Terrain': L.Google.tileLayer('TERRAIN', {attribution: cfg.maps.google.attribution}),
-      'Google Satellite': L.Google.tileLayer('HYBRID', {attribution: cfg.maps.google.attribution}),
-      'Google Bicycling': L.Google.tileLayer('ROADMAP', {layer: 'bicycling', attribution: cfg.maps.google.attribution}),
-      'Google Transit': L.Google.tileLayer('ROADMAP', {layer: 'transit', attribution: cfg.maps.google.attribution})
-    };
-    var overlays = {
-      'Cycling Routes': L.tileLayer(cfg.maps.waymarkedtrails.url, {attribution: cfg.maps.waymarkedtrails.attribution}),
-      'Hillshade': L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution})
-    };
-    L.control.layers(baseLayers, overlays).addTo(this.map);
-    L.control.locate({position: 'topright', locateOptions: {maxZoom: '17'}}).addTo(this.map);
-    L.control.zoomslider({position: 'topright'}).addTo(this.map);
+    Controls.layers().addTo(this.map);
+    Controls.zoom().addTo(this.map);
 
     this.map.attributionControl.setPrefix('');
     this.map.attributionControl.addAttribution(
       '© <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>, ' +
       'Routing © <a href="http://dr-brenschede.de/brouter/">BRouter</a>');
 
-    baseLayers[this.storage.activeOverlay].addTo(this.map);
     this.map.addEventListener('baselayerchange', function(e) {
       this.storage.activeOverlay = e.name;
     }.bind(this));
@@ -157,16 +134,6 @@ BRouter.prototype = {
         }.bind(this));
       }
     }.bind(this));
-
-    this.elevation = L.control.elevation({
-      position: "bottomright",
-      theme: "steelblue-theme",
-      width: 500,
-      height: 125,
-      useHeightIndicator: true,
-      collapsed: true  // collapsed mode, show chart on click or mouseover
-    });
-    this.elevation.addTo(this.map);
   },
 
   initToolbox: function() {
@@ -325,7 +292,6 @@ BRouter.prototype = {
     }
 
     this.line = L.Routing.line(coords);
-    this.elevation.addData(this.line.getPolyline());
     this.routeLayer.addLayer(this.line);
     if (options.fitBounds) {
       this.map.fitBounds(this.routeLayer.getBounds());
@@ -348,7 +314,6 @@ BRouter.prototype = {
     this.map.closePopup();
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
-      this.elevation.clear();
     }
     var latlngs = this.waypoints.map(function(waypoint) {
       return waypoint.marker.getLatLng();

@@ -1,0 +1,31 @@
+<div class="box{{ expanded ? ' expanded' : '' }}">
+  <header on-click="toggle">
+    <span class="control-button" on-click="layers" title="Layers">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="icon" viewBox="0 0  23.303 21.461">
+        <polygon points="23.303,6.333 11.652,0 0,6.333 11.652,12.667" class="fill" />
+        <polygon points="11.652,14.709 2.166,9.555 0,10.732 11.652,17.063 23.303,10.732 21.137,9.555" class="fill" />
+        <polygon points="11.652,19.107 2.166,13.952 0,15.127 11.652,21.461 23.303,15.127 21.137,13.952" class="fill" />
+      </svg>
+    </span>
+  </header>
+
+  {{#expanded}}
+  <div class="menu layers-menu" intro-outro="slide">
+    <p><strong>Layers</strong></p>
+    {{#layers}}
+      <div on-click="setLayer:{{this}}" class="layer-preview{{ (name === activeLayer) ? ' active' : '' }}">
+        <span class="title">{{name}}</span>
+        <div class="preview" intro="previewMap:{{this}}"></div>
+      </div>
+    {{/layers}}
+
+    <p class="clear"><strong>Overlays</strong></p>
+    {{#overlays}}
+      <div on-click="toggleOverlay:{{this}}" class="layer-preview {{ activeOverlays.hasOwnProperty(name) ? 'active' : '' }}">
+        <span class="title">{{name}}</span>
+        <div class="preview" intro="previewMap:{{this}}"></div>
+      </div>
+    {{/overlays}}
+  </div>
+  {{/expanded}}
+</div>

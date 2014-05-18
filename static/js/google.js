@@ -90,6 +90,10 @@ L.Google = L.Class.extend({
         e.style.height = size.y + "px";
     },
 
+    bringToBack: function () {
+        return this;
+    },
+
     _initContainer: function() {
         var tilePane = this._map._container,
             first = tilePane.firstChild;

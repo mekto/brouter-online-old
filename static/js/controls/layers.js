@@ -32,19 +32,16 @@ var Layers = L.Control.extend({
       constructor: function() { return L.mapbox.tileLayer('mekto.hj5462ii', {attribution: cfg.maps.mapbox.attribution}); }
     }, {
       name: 'Google Road',
-      constructor: function() { return L.Google.tileLayer('ROADMAP', {attribution: cfg.maps.google.attribution}); }
+      variants: ['bicycling', 'transit'],
+      constructor: function(variant) { return L.Google.tileLayer('ROADMAP', {layer: variant, attribution: cfg.maps.google.attribution}); }
     }, {
       name: 'Google Terrain',
-      constructor: function() { return L.Google.tileLayer('TERRAIN', {attribution: cfg.maps.google.attribution}); }
+      variants: ['bicycling', 'transit'],
+      constructor: function(variant) { return L.Google.tileLayer('TERRAIN', {layer: variant, attribution: cfg.maps.google.attribution}); }
     }, {
       name: 'Google Satellite',
-      constructor: function() { return L.Google.tileLayer('HYBRID', {attribution: cfg.maps.google.attribution}); }
-    }, {
-      name: 'Google Bicycling',
-      constructor: function() { return L.Google.tileLayer('ROADMAP', {layer: 'bicycling', attribution: cfg.maps.google.attribution}); }
-    }, {
-      name: 'Google Transit',
-      constructor: function() { return L.Google.tileLayer('ROADMAP', {layer: 'transit', attribution: cfg.maps.google.attribution}); }
+      variants: ['bicycling', 'transit'],
+      constructor: function(variant) { return L.Google.tileLayer('HYBRID', {layer: variant, attribution: cfg.maps.google.attribution}); }
     }];
 
     var overlays = [{
@@ -72,7 +69,7 @@ var Layers = L.Control.extend({
       expanded: false,
       layers: this._layers,
       overlays: this._overlays,
-      activeLayer: null,
+      activeLayer: {},
       activeOverlays: {}
     });
     this.control.on({
@@ -89,17 +86,24 @@ var Layers = L.Control.extend({
     this.control.set('expanded', !this.control.get('expanded'));
   },
 
-  setLayer: function(e, layer) {
-    if (this.control.get('activeLayer') === layer.name)
+  setLayer: function(e, layer, variant) {
+    if (e) e.original.stopPropagation();
+
+    // workaround for getting current layer in loop
+    if (layer === undefined)
+      layer = this.control.get(e.keypath.match(/layers\.\d+/)[0]);
+
+    var activeLayer = this.control.get('activeLayer');
+    if ((activeLayer.name === layer.name) && (activeLayer.variant === variant))
       return;
 
     if (this._activeLayer)
       this._map.removeLayer(this._activeLayer);
 
-    this._activeLayer = layer.constructor();
+    this._activeLayer = layer.constructor(variant);
     this._map.addLayer(this._activeLayer);
     this._activeLayer.bringToBack();
-    this.control.set('activeLayer', layer.name);
+    this.control.set('activeLayer', {name: layer.name, variant: variant});
   },
 
   toggleOverlay: function(e, overlay) {

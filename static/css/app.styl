@@ -153,6 +153,22 @@ fill-and-stroke(color)
         outline: 3px solid silver;
       &.active
         outline: 3px solid green;
+    .variants
+      absolute: bottom 0 right 1px;
+      z-index: 100;
+      li
+        display: inline-block;
+        background-color: white;
+        border-radius: 5px;
+        size: 22px;
+        text-align: center;
+        border: 2px solid #bbb; 
+      li:hover
+        border-color: #888;
+      li.active
+        border-color: green;
+      .icon *
+        fill-and-stroke: #333;
 
   .box.expanded
     width: 400px;

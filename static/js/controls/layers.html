@@ -10,12 +10,12 @@
   </header>
 
   {{#expanded}}
-  <div class="menu layers-menu" intro-outro="slide">
+  <div class="menu layers-menu">
     <p><strong>Layers</strong></p>
     {{#layers}}
       <div on-click="setLayer:{{this}}" class="layer-preview{{ (name === activeLayer) ? ' active' : '' }}">
         <span class="title">{{name}}</span>
-        <div class="preview" intro="previewMap:{{this}}"></div>
+        <div class="preview" decorator="previewMap:{{this}}"></div>
       </div>
     {{/layers}}
 
@@ -23,7 +23,7 @@
     {{#overlays}}
       <div on-click="toggleOverlay:{{this}}" class="layer-preview {{ activeOverlays.hasOwnProperty(name) ? 'active' : '' }}">
         <span class="title">{{name}}</span>
-        <div class="preview" intro="previewMap:{{this}}"></div>
+        <div class="preview" decorator="previewMap:{{this}}"></div>
       </div>
     {{/overlays}}
   </div>

@@ -64,7 +64,7 @@ var Layers = L.Control.extend({
     this._map = map;
 
     this.control = utils.createControl(require('./layers.html'), 'layers', {
-      transitions: {
+      decorators: {
         previewMap: this.previewMapDecorator.bind(this)
       }
     });
@@ -100,8 +100,6 @@ var Layers = L.Control.extend({
     this._map.addLayer(this._activeLayer);
     this._activeLayer.bringToBack();
     this.control.set('activeLayer', layer.name);
-
-    console.log(layer.name);
   },
 
   toggleOverlay: function(e, overlay) {
@@ -120,30 +118,36 @@ var Layers = L.Control.extend({
     this.control.update('activeOverlays');
   },
 
-  previewMapDecorator: function(t, layer) {
-    var miniMap = L.map(t.node, {attributionControl: false, zoomControl: false, layers: [layer.constructor()]}),
+  previewMapDecorator: function(node, layer_) {
+    var minimap = L.map(node, {attributionControl: false, zoomControl: false}),
+        layer = layer_.constructor(),
         map = this._map;
 
-    miniMap.dragging.disable();
-    miniMap.touchZoom.disable();
-    miniMap.doubleClickZoom.disable();
-    miniMap.scrollWheelZoom.disable();
+    minimap.addLayer(layer);
+    minimap.dragging.disable();
+    minimap.touchZoom.disable();
+    minimap.doubleClickZoom.disable();
+    minimap.scrollWheelZoom.disable();
 
-    function setView(options) {
-      miniMap.setView(map.getCenter(), Math.max(map.getZoom() - 2, 5), options);
-    }
-
-    miniMap.invalidateSize();
+    minimap.invalidateSize();
     setView();
-    map.on('moveend', moved);
+
+    function setView() {
+      minimap.setView(map.getCenter(), Math.max(map.getZoom() - 1, 4));
+    }
 
     function moved() {
-      miniMap.invalidateSize();
+      minimap.invalidateSize();
       setView();
     }
+    map.on('moveend', moved);
 
     return {
-      teardown: function() {}
+      teardown: function() {
+        map.off('moveend', moved);
+        minimap.removeLayer(layer);
+        minimap.remove();
+      }
     };
   }
 });

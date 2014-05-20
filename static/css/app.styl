@@ -9,6 +9,7 @@ html
   height: 100%;
 body
   height: 100%; margin: 0; padding: 0; color: $font-color; font-family: $font-family;
+  -webkit-font-smoothing: antialiased;
 
 #map
   size: 100%;
@@ -180,3 +181,17 @@ fill-and-stroke(color)
 
 .clear
   clear: both;
+
+svg line
+   shape-rendering: crispEdges;
+
+.elevation
+  .band
+    fill: none; stroke: darkgreen; stroke-width: 2px;
+  .band-fill
+    fill: green; stroke: none;
+  .axis
+    stroke: #333; stroke-width: 1px;
+  .axis-label
+    font-size: 9px;
+    text-anchor: end;

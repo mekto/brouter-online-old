@@ -9,7 +9,7 @@
         {{#waypoints:i}}
         <li>
           <label>
-            <input type="text" value="{{ address }}" placeholder="{{#i==0}}Select starting point{{/i}}{{#i==waypoints.length-1}}End point{{/i}}" on-keydown="search">
+            <input type="text" value="{{ address }}" placeholder="{{#i==0}}Select starting point{{/i}}{{#i==waypoints.length-1}}End point{{/i}}" on-keydown="keydown">
           </label>
         </li>
         {{/waypoints}}
@@ -30,7 +30,7 @@
         </select>
       </div>
 
-      <button class="btn btn-primary" disabled="{{ !canSearch(waypoints) }}" on-click="findRoute">Find route</button>
+      <button class="btn btn-primary" on-click="findRoute">Find route</button>
     </footer>
   </section>
 
@@ -44,4 +44,24 @@
     </div>
   </section>
   {{/info}}
+
+  {{#chart}}
+  <section class="elevation">
+    <svg width="{{ width + 40 }}" height="{{ height + 20 }}">
+      <g transform="translate(30, 10)">
+        <polyline points="{{ band(data) }}" class="band"/>
+        <polyline points="{{ band(data) }} {{width}},{{height}} 0,{{height}}" class="band-fill"/>
+
+        <line class="axis" y2="{{ height + 5 }}"/>
+        <text class="axis-label" x="-8" y="{{ height + 4 }}">{{ round(min) }}</text>
+        <text class="axis-label" x="-8" y="4">{{ round(max) }}</text>
+
+        <g transform="translate(0, {{ yScale(min) }})">
+          <line class="axis" x1="-5" x2="{{ width }}"/>
+        </g>
+      </g>
+    </svg>
+  </section>
+  {{/chart}}
+
 </div>

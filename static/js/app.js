@@ -83,46 +83,20 @@ App.prototype = {
   },
 
   initToolbox: function() {
-    this.toolbox = new Ractive({
-      template: require('./templates/toolbox.html'),
-      el: document.createElement('div')
-    });
-
-    L.DomEvent
-      .disableClickPropagation(this.toolbox.el)
-      .disableScrollPropagation(this.toolbox.el);
+    this.toolbox = require('./toolbox');
+    this.toolbox.set('waypoints', this.waypoints);
 
     this.toolbox.on({
-      search: function(e) {
-        if (e.original.keyCode === 13) {
-          var waypoint = e.context;
-          this.search(waypoint);
-        }
+      search: function(waypoint) {
+        this.search(waypoint);
       }.bind(this),
 
-      findRoute: function(e) {
+      findRoute: function() {
         this.findRoute();
       }.bind(this)
     });
 
-    this.toolbox.set({
-      waypoints: this.waypoints,
-      profiles: {
-        'trekking': 'Trekking',
-        'fastbike': 'Fastbike',
-        'safety': 'Safty',
-        'shortest': 'Shortest',
-        'car-test': 'Car'
-      },
-      alternatives: [0, 1, 2, 3],
-      profile: 'trekking',
-      alternative: 0,
-
-      /* helper methods */
-      canSearch: this.canSearch.bind(this)
-    });
-
-    this.addMapControl(this.toolbox.el, 'topleft');
+    this.toolbox.control().addTo(this.map);
   },
 
   initStorage: function() {
@@ -179,14 +153,6 @@ App.prototype = {
         .setContent(content.el)
         .openOn(this.map);
     }.bind(this));
-  },
-
-  addMapControl: function(element, position) {
-    var Control = L.Control.extend({
-      options: { position: position },
-      onAdd: function() { return element; }
-    });
-    new Control().addTo(this.map);
   },
 
   canSearch: function() {
@@ -280,12 +246,7 @@ App.prototype = {
       this.map.fitBounds(this.routeLayer.getBounds());
     }
 
-    this.toolbox.set('info', {
-      waypoints: this.waypoints.map(function(waypoint) {
-        return waypoint.getInfo();
-      }),
-      km: data.distance
-    });
+    this.toolbox.setRouteInfo(this.waypoints, coords, data.distance);
   },
 
   findRoute: function(options) {
@@ -308,6 +269,7 @@ App.prototype = {
     }
 
     this.toolbox.set('info', null);
+    this.toolbox.set('chart', null);
 
     var profile = this.toolbox.get('profile'),
         alternative = this.toolbox.get('alternative'),

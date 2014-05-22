@@ -190,8 +190,16 @@ svg line
     fill: none; stroke: darkgreen; stroke-width: 2px;
   .band-fill
     fill: green; stroke: none;
-  .axis
+  .axis, .tick
     stroke: #333; stroke-width: 1px;
-  .axis-label
-    font-size: 9px;
+  .axis-label, .tick-label
+    font-size: 10px;
+  .x-axis .tick-label
+    text-anchor: middle;
+  .y-axis .tick-label
     text-anchor: end;
+  .x-axis .axis-label
+    text-anchor: start;
+  .y-axis .axis-label
+    text-anchor: middle;
+    writing-mode: rl-tb;

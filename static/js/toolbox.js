@@ -57,7 +57,7 @@ toolbox.setRouteInfo = function(waypoints, coords, distance) {
 };
 
 var drawElevationChart = function(coords) {
-  var width = 230,
+  var width = 215,
       height = 90,
       data = [],
       dist = 0,
@@ -76,11 +76,11 @@ var drawElevationChart = function(coords) {
     });
   }
 
-  eleExtent = extent(data, function(p) { return p.alt; });
+  eleExtent = scaleExtent(data, function(p) { return p.alt; });
   min = eleExtent[0];
   max = eleExtent[1];
-  if (max - min < 150) {
-    max = min + 150;
+  if (max - min < 160) {
+    max = min + 160;
   }
 
   toolbox.set('chart', {
@@ -92,6 +92,8 @@ var drawElevationChart = function(coords) {
     max: max,
     xScale: linearScale([0, dist], [0, width]),
     yScale: linearScale([min, max], [height, 0]),
+    xScaleTicks: linearTickRange([0, dist], 5),
+    yScaleTicks: linearTickRange([min, max], 5),
 
     band: function() {
       var xScale = this.get('chart.xScale'),
@@ -131,9 +133,33 @@ var getPointsArray = function(array, xScale, yScale) {
 /*
   Returns the minimum and maximum value in given array.
 */
-function extent(array, accessor) {
+function scaleExtent(array, accessor) {
   if (accessor) {
     array = array.map(accessor);
   }
   return [Math.min.apply(null, array), Math.max.apply(null, array)];
 }
+
+
+var linearTickRange = function(domain, m) {
+  var extent = scaleExtent(domain),
+      span = extent[1] - extent[0],
+      step = Math.pow(10, Math.floor(Math.log(span / m) / Math.LN10)),
+      err = m / span * step,
+      range = [],
+      i = 0,
+      j;
+
+  if (err <= 0.15) step *= 10;
+  else if (err <= 0.35) step *= 5;
+  else if (err <= 0.75) step *= 2;
+
+  var start = Math.ceil(extent[0] / step) * step;
+  var stop = Math.floor(extent[1] / step) * step + step * 0.5;
+
+  while ((j = start + step * i++) < stop)
+    range.push(j);
+
+  return range;
+};
+

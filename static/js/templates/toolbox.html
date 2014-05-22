@@ -47,17 +47,33 @@
 
   {{#chart}}
   <section class="elevation">
-    <svg width="{{ width + 40 }}" height="{{ height + 20 }}">
-      <g transform="translate(30, 10)">
+    <svg width="{{ width + 60 }}" height="{{ height + 38 }}">
+      <g transform="translate(45, 10)">
         <polyline points="{{ band(data) }}" class="band"/>
         <polyline points="{{ band(data) }} {{width}},{{height}} 0,{{height}}" class="band-fill"/>
 
-        <line class="axis" y2="{{ height + 5 }}"/>
-        <text class="axis-label" x="-8" y="{{ height + 4 }}">{{ round(min) }}</text>
-        <text class="axis-label" x="-8" y="4">{{ round(max) }}</text>
+        <g class="y-axis">
+          <line class="axis" y2="{{ height }}"/>
+          <text class="axis-label" x="{{ -height / 2 }}" y="-34" transform="rotate(-90)">Altitude (m)</text>
 
-        <g transform="translate(0, {{ yScale(min) }})">
-          <line class="axis" x1="-5" x2="{{ width }}"/>
+          {{#yScaleTicks}}
+          <g transform="translate(0, {{ yScale(this) }})">
+            <line class="tick" x1="-5"/>
+            <text class="tick-label" x="-7" dy=".32em">{{ . }}</text> 
+          </g>
+          {{/yScaleTicks}}
+        </g>
+
+        <g class="x-axis" transform="translate(0, {{ yScale(min) }})">
+          <line class="axis" x2="{{ width }}"/>
+          <text class="axis-label" x="{{ width / 3 }}" y="16" dy="1em">Distance (km)</text>
+
+          {{#xScaleTicks:i}}
+          <g transform="translate({{ xScale(this) }}, 0)">
+            <line class="tick" y2="5"/>
+            <text class="tick-label" y="5" dy="1em">{{ . }}</text> 
+          </g>
+          {{/xScaleTicks}}
         </g>
       </g>
     </svg>

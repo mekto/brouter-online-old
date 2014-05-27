@@ -14,6 +14,11 @@ toolbox.set({
     'fastbike': 'Fastbike',
     'safety': 'Safty',
     'shortest': 'Shortest',
+    'trekking-ignore-cr': 'Trekking - ignore cycling routes',
+    'trekking-noferries': 'Trekking - no ferries',
+    'trekking-nosteps': 'Trekking - no steps',
+    'trekking-steep': 'Trekking - steep',
+    'moped': 'Moped',
     'car-test': 'Car'
   },
   alternatives: [0, 1, 2, 3],

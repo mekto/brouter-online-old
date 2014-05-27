@@ -186,6 +186,8 @@ svg line
    shape-rendering: crispEdges;
 
 .elevation
+  .main-area
+    fill: none; stroke: none; pointer-events: all;
   .band
     fill: none; stroke: darkgreen; stroke-width: 2px;
   .band-fill
@@ -203,3 +205,9 @@ svg line
   .y-axis .axis-label
     text-anchor: middle;
     writing-mode: rl-tb;
+  .guide
+    stroke: #555; stroke-width: 1px; stroke-dasharray: 4 1; pointer-events: none;
+  .guide-label
+    font-size: 10px; background-color: rgba(white, .8);
+  .labels-left .guide-label
+    text-anchor: end;

@@ -27,6 +27,30 @@ toolbox.on({
       var waypoint = e.context;
       this.fire('search', waypoint);
     }
+  },
+
+  'showGuide': function(e) {
+    var data = this.get('chart.data'),
+        xInvertScale = this.get('chart.xInvertScale'),
+        width = this.get('chart.width'),
+        pos = e.original.offsetX - 45,
+        dist = xInvertScale(pos),
+        index = bisect(data.map(function(point) { return point.dist; }), dist),
+        point = data[index];
+
+    if (point) {
+      this.set('guide', {
+        labelAlign: pos > (width - width / 5) ? 'left' : 'right',
+        pos: pos,
+        dist: point.dist,
+        alt: point.alt,
+        latlng: point.latlng
+      });
+    }
+  },
+
+  'hideGuide': function(e) {
+    this.set('guide', null);
   }
 });
 
@@ -92,6 +116,7 @@ var drawElevationChart = function(coords) {
     max: max,
     xScale: linearScale([0, dist], [0, width]),
     yScale: linearScale([min, max], [height, 0]),
+    xInvertScale: linearScale([0, width], [0, dist]),
     xScaleTicks: linearTickRange([0, dist], 5),
     yScaleTicks: linearTickRange([min, max], 5),
 
@@ -102,8 +127,10 @@ var drawElevationChart = function(coords) {
       return points.join(' ');
     },
 
-    round: function(value) {
-      return Math.round(value);
+    round: function(value, n) {
+      return n
+        ? Math.round(value * (n = Math.pow(10, n))) / n
+        : Math.round(value);
     }
   });
 };
@@ -163,3 +190,15 @@ var linearTickRange = function(domain, m) {
   return range;
 };
 
+/*
+  Locates the insertion point for x in array to maintain sorted order.
+*/
+var bisect = function(array, x) {
+  var lo = 0, hi = array.length, mid;
+  while (lo < hi) {
+    mid = lo + hi >>> 1;
+    if (array[mid] < x) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+};

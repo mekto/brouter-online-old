@@ -75,6 +75,17 @@
           </g>
           {{/xScaleTicks}}
         </g>
+
+        {{#guide}}
+        <g transform="translate({{ pos }}, 0)" class="labels-{{ labelAlign }}">
+          <line class="guide" y2="{{ height + 3 }}"/>
+
+          <text class="guide-label" x="{{ labelAlign === 'left' ? -3 : 3 }}" y="9">{{ round(alt) }} m</text>
+          <text class="guide-label" x="{{ labelAlign === 'left' ? -3 : 3 }}" y="{{ height - 5 }}">{{ round(dist, 2) }} km</text>
+        </g>
+        {{/guide}}
+
+        <rect class="main-area" width="{{ width }}" height="{{ height }}" on-mousemove="showGuide" on-mouseout="hideGuide"/>
       </g>
     </svg>
   </section>

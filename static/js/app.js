@@ -181,17 +181,20 @@ App.prototype = {
     });
     waypoint.marker.waypoint = waypoint;  // reverse mapping
     waypoint.marker.addTo(this.routeLayer);
-    if (this.map.getZoom() < 13)
-      this.map.setView(waypoint.marker.getLatLng(), 14);
-    else
-      this.map.panTo(waypoint.marker.getLatLng());
 
     waypoint.marker.addEventListener('dragend', function(e) {
       this.searchAddressReverse(e.target);
     }.bind(this));
 
+    if (this.canSearch()) {
+      this.findRoute();
+    } else {
+      if (this.map.getZoom() < 13)
+        this.map.setView(waypoint.marker.getLatLng(), 14);
+      else
+        this.map.panTo(waypoint.marker.getLatLng());
+    }
     this.toolbox.update();
-    this.findRoute();
   },
 
   lookupAddress: function(latlng, callback) {
@@ -243,7 +246,7 @@ App.prototype = {
     this.line = L.Routing.line(coords);
     this.routeLayer.addLayer(this.line);
     if (options.fitBounds) {
-      this.map.fitBounds(this.routeLayer.getBounds());
+      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
     }
 
     this.toolbox.setRouteInfo(this.waypoints, coords, data.distance);
@@ -265,7 +268,7 @@ App.prototype = {
     this.line = L.polyline(latlngs, {color: '#555', weight: 1, className: 'loading-line'});
     this.routeLayer.addLayer(this.line);
     if (options.fitBounds) {
-      this.map.fitBounds(this.routeLayer.getBounds());
+      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
     }
 
     this.toolbox.set('info', null);

@@ -85,10 +85,22 @@
         </g>
         {{/guide}}
 
-        <rect class="main-area" width="{{ width }}" height="{{ height }}" on-mousemove="showGuide" on-mouseout="hideGuide"/>
+        <rect class="main-area" width="{{ width }}" height="{{ height }}" on-mousemove="showGuide" on-mouseout="hideGuide" on-click="pan"/>
       </g>
     </svg>
   </section>
   {{/chart}}
 
 </div>
+
+<!-- {{>heightIndicator}} -->
+<svg class="height-indicator" width="80" height="60">
+  <g class="labels-right" transform="translate(3, 0)">
+    <line class="guide" y2="60"/>
+
+    <text class="guide-label" x="3" y="9">{{ round(alt) }} m</text>
+    <text class="guide-label" x="3" y="20">{{ round(dist, 2) }} km</text>
+    <circle cx="0" cy="57" r="2.5"/> 
+  </g>
+</svg>
+<!-- {{/heightIndicator}} -->

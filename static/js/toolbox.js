@@ -1,10 +1,14 @@
 'use strict';
 
-var Ractive = require('Ractive');
+var Ractive = require('Ractive'),
+    template = require('./templates/toolbox.html'),
+    toolbox = null,
+    heightIndicator = null;
 
 
-var toolbox = module.exports = new Ractive({
-  template: require('./templates/toolbox.html'),
+
+toolbox = module.exports = new Ractive({
+  template: template.main,
   el: document.createElement('div'),
 });
 
@@ -34,28 +38,55 @@ toolbox.on({
     }
   },
 
-  'showGuide': function(e) {
-    var data = this.get('chart.data'),
-        xInvertScale = this.get('chart.xInvertScale'),
-        width = this.get('chart.width'),
-        pos = e.original.offsetX - 45,
-        dist = xInvertScale(pos),
-        index = bisect(data.map(function(point) { return point.dist; }), dist),
-        point = data[index];
+  'pan': function(e) {
+    var hover = this._getHoverInfo(e);
 
-    if (point) {
+    if (hover.point) {
+      this.map.panTo(hover.point.latlng);
+    }
+  },
+
+  'showGuide': function(e) {
+    var hover = this._getHoverInfo(e),
+        width = this.get('chart.width'),
+        el, pos;
+
+    if (hover.point) {
       this.set('guide', {
-        labelAlign: pos > (width - width / 5) ? 'left' : 'right',
-        pos: pos,
-        dist: point.dist,
-        alt: point.alt,
-        latlng: point.latlng
+        labelAlign: hover.pos > (width - width / 5) ? 'left' : 'right',
+        pos: hover.pos,
+        dist: hover.point.dist,
+        alt: hover.point.alt,
       });
+
+      if (!heightIndicator) {
+        heightIndicator = new Ractive({
+          template: template.partials.heightIndicator,
+          el: toolbox.map.getPanes().overlayPane,
+          append: true,
+          data: {
+            round: this.get('chart.round')
+          }
+        });
+      }
+      heightIndicator.set({
+        dist: hover.point.dist,
+        alt: hover.point.alt
+      });
+
+      el = heightIndicator.find('.height-indicator');
+      pos = toolbox.map.latLngToLayerPoint(hover.point.latlng);
+      L.DomUtil.setPosition(el, pos.subtract([3, el.offsetHeight - 3]));
     }
   },
 
   'hideGuide': function(e) {
     this.set('guide', null);
+
+    if (heightIndicator) {
+      heightIndicator.teardown();
+      heightIndicator = null;
+    }
   }
 });
 
@@ -83,6 +114,21 @@ toolbox.setRouteInfo = function(waypoints, coords, distance) {
     km: distance
   });
   drawElevationChart(coords);
+};
+
+toolbox._getHoverInfo = function(e) {
+    var data = this.get('chart.data'),
+        xInvertScale = this.get('chart.xInvertScale'),
+        pos = e.original.offsetX - 45,
+        dist = xInvertScale(pos),
+        index = bisect(data.map(function(point) { return point.dist; }), dist),
+        point = data[index];
+
+    return {
+      pos: pos,
+      dist: dist,
+      point: point
+    };
 };
 
 var drawElevationChart = function(coords) {

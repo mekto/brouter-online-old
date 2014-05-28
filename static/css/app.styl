@@ -205,9 +205,16 @@ svg line
   .y-axis .axis-label
     text-anchor: middle;
     writing-mode: rl-tb;
+
+.guide
+  stroke: #555; stroke-width: 1px; stroke-dasharray: 4 1; pointer-events: none;
+.guide-label
+  font-size: 10px; background-color: rgba(white, .8);
+.labels-left .guide-label
+  text-anchor: end;
+
+.height-indicator
   .guide
-    stroke: #555; stroke-width: 1px; stroke-dasharray: 4 1; pointer-events: none;
-  .guide-label
-    font-size: 10px; background-color: rgba(white, .8);
-  .labels-left .guide-label
-    text-anchor: end;
+    stroke-dasharray: none; stroke: #555;
+  circle 
+    fill: white; stroke: #555; stroke-width: 1px;

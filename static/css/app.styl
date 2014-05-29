@@ -90,6 +90,14 @@ fill-and-stroke(color)
 .icon *
   fill-and-stroke: #fff;
 
+@keyframes locating-pulse
+  0% { fill-and-stroke: #fff; }
+  50% { fill-and-stroke: gold; }
+  100% { fill-and-stroke: #fff; }
+.icon-locate-on *
+  fill-and-stroke: green;
+.icon-locate-searching *
+  animation: locating-pulse 1s infinite ease;
 
 .leaflet-control
 
@@ -165,7 +173,7 @@ fill-and-stroke(color)
         border-radius: 5px;
         size: 22px;
         text-align: center;
-        border: 2px solid #bbb; 
+        border: 2px solid #bbb;
       li:hover
         border-color: #888;
       li.active
@@ -216,5 +224,5 @@ svg line
 .height-indicator
   .guide
     stroke-dasharray: none; stroke: #555;
-  circle 
+  circle
     fill: white; stroke: #555; stroke-width: 1px;

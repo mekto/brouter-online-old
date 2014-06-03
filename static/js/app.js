@@ -48,7 +48,11 @@ App.prototype = {
   },
 
   initMap: function() {
-    this.map = L.map('map', {zoomControl: false, minZoom: 2}).setView([49, 18], 4);
+    this.map = L.map('map', {zoomControl: false, minZoom: 2});
+    if (window.geolocation)
+      this.map.setView([window.geolocation.lat, window.geolocation.lon], 12);
+    else
+      this.map.setView([49, 18], 4);
     this.map.addLayer(this.routeLayer);
     this.initToolbox();
     this.initLayers();

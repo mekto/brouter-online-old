@@ -5,6 +5,9 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/static/js/vendors/leaflet/leaflet.css">
     <link rel="stylesheet" href="/static/build/app.css">
+    {% if geolocation %}
+    <script>var geolocation = {{ geolocation|tojson|safe }}</script>
+    {% endif %}
   </head>
   <body>
     <div id="map"></div>

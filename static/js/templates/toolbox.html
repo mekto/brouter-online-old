@@ -37,10 +37,13 @@
   {{#info}}
   <section>
     <div class="inner">
+      {{^warning}}
       {{#waypoints:i}}
         {{#i}} - {{/i}}{{ address }}
       {{/waypoints}}
       <br><strong>{{ info.km }} km</strong>
+      {{/warning}}
+      {{#warning}}{{{ warning }}}{{/warning}}
     </div>
   </section>
   {{/info}}

@@ -92,7 +92,7 @@ App.prototype = {
       }.bind(this),
 
       findRoute: function() {
-        this.findRoute();
+        this.findRoute({force: true});
       }.bind(this)
     });
 
@@ -158,6 +158,15 @@ App.prototype = {
   canSearch: function() {
     return this.waypoints.every(function(waypoint) {
       return waypoint.marker;
+    });
+  },
+
+  distanceBetweenWaypoints: function() {
+    return this.waypoints.reduce(function(first, second) {
+      if (first.marker && second.marker) {
+        return first.marker.getLatLng().distanceTo(second.marker.getLatLng());
+      }
+      return 0;
     });
   },
 
@@ -240,6 +249,11 @@ App.prototype = {
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
+    if (!xml) {
+      this.toolbox.set('info', { warning: 'Cannot calculate route.' });
+      return;
+    }
+
     var nodes = xml.getElementsByTagName('trkpt'), coords = [], i,
         comment = xml.firstChild.textContent, distance;
     distance = parseInt(comment.match(/track-length = (\d+)/)[1]) / 1000;
@@ -261,25 +275,37 @@ App.prototype = {
 
   findRoute: function(options) {
     if (!this.canSearch()) {
-      return;
+      return false;
     }
-    options = L.extend({ fitBounds: true }, options || {});
+    options = L.extend({ fitBounds: true, force: false }, options || {});
 
     this.map.closePopup();
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
+
+    this.toolbox.set('info', null);
+    this.toolbox.set('chart', null);
+
     var latlngs = this.waypoints.map(function(waypoint) {
       return waypoint.marker.getLatLng();
     });
-    this.line = L.polyline(latlngs, {color: '#555', weight: 1, className: 'loading-line'});
-    this.routeLayer.addLayer(this.line);
     if (options.fitBounds) {
       this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
     }
 
-    this.toolbox.set('info', null);
-    this.toolbox.set('chart', null);
+    var distance = this.distanceBetweenWaypoints();
+    if (distance > config.maxDistance) {
+      this.toolbox.set('info', { warning: 'The distance is too long to calculate a route.'});
+      return false;
+    }
+    if (distance > config.maxAutoCalculationDistance && !options.force) {
+      this.toolbox.set('info', { warning: 'Press <i>Find route</i> to calculate.'});
+      return false;
+    }
+
+    this.line = L.polyline(latlngs, {color: '#555', weight: 1, className: 'loading-line'});
+    this.routeLayer.addLayer(this.line);
 
     var profile = this.toolbox.get('profile'),
         alternative = this.toolbox.get('alternative'),
@@ -295,7 +321,7 @@ App.prototype = {
       this.request = null;
     }
 
-    var url = L.Util.template(config.brouter_host + '/brouter?lonlats={lonlats}&profile={profile}&alternativeidx={alternativeidx}&format={format}', {
+    var url = L.Util.template(config.brouterHost + '/brouter?lonlats={lonlats}&profile={profile}&alternativeidx={alternativeidx}&format={format}', {
       lonlats: lonlats,
       profile: profile,
       alternativeidx: alternative,
@@ -311,6 +337,8 @@ App.prototype = {
       this.request = null;
     }.bind(this);
     request.send();
+
+    return true;
   }
 };
 

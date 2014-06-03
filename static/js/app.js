@@ -4,9 +4,9 @@ require('./routing');
 require('./google');
 
 
-var request = require('superagent'),
-    Ractive = require('Ractive'),
-    Controls = require('./controls.js');
+var Ractive = require('Ractive'),
+    Controls = require('./controls.js'),
+    config = require('../../config.js');
 
 
 function Waypoint() {
@@ -231,17 +231,19 @@ App.prototype = {
     return this.getAddressComponents(geocoderResult).join(', ');
   },
 
-  setDirectionPath: function(data, options) {
+  setDirectionPath: function(xml, options) {
     if (this.line) {
       this.routeLayer.removeLayer(this.line);
     }
+    var nodes = xml.getElementsByTagName('trkpt'), coords = [], i,
+        comment = xml.firstChild.textContent, distance;
+    distance = parseInt(comment.match(/track-length = (\d+)/)[1]) / 1000;
 
-    var coords = [], i;
-    for (i = 0; i < data.coords.length; i++) {
-      var latlng = new L.LatLng(data.coords[i].lat, data.coords[i].lng);
-      latlng.meta = {ele: data.coords[i].ele};
+    Array.prototype.forEach.call(nodes, function(node) {
+      var latlng = new L.LatLng(parseFloat(node.attributes.lat.value), parseFloat(node.attributes.lon.value));
+      latlng.meta = {ele: (node.firstElementChild) ? parseFloat(node.firstElementChild.textContent) : null};
       coords.push(latlng);
-    }
+    });
 
     this.line = L.Routing.line(coords);
     this.routeLayer.addLayer(this.line);
@@ -249,7 +251,7 @@ App.prototype = {
       this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
     }
 
-    this.toolbox.setRouteInfo(this.waypoints, coords, data.distance);
+    this.toolbox.setRouteInfo(this.waypoints, coords, distance);
   },
 
   findRoute: function(options) {
@@ -287,17 +289,23 @@ App.prototype = {
       this.request.abort();
       this.request = null;
     }
-    this.request = request.get('/dir')
-      .query({
-        lonlats: lonlats,
-        profile: profile,
-        alternativeidx: alternative,
-        format: 'gpx'
-      })
-      .end(function(response) {
-        this.setDirectionPath(response.body, options);
-        this.request = null;
-      }.bind(this));
+
+    var url = L.Util.template(config.brouter_host + '/brouter?lonlats={lonlats}&profile={profile}&alternativeidx={alternativeidx}&format={format}', {
+      lonlats: lonlats,
+      profile: profile,
+      alternativeidx: alternative,
+      format: 'gpx'
+    });
+
+    var request = this.request = new XMLHttpRequest(url);
+    request.open('GET', url, true);
+    request.onload = function() {
+      if (request.status === 200) {
+        this.setDirectionPath(request.responseXML, options);
+      }
+      this.request = null;
+    }.bind(this);
+    request.send();
   }
 };
 

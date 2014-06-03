@@ -1,8 +1,40 @@
 'use strict';
 
-var utils = require('../utils'),
-    cfg = require('../config');
+var utils = require('../utils');
 
+var info = {
+  mapbox: {
+    attribution: 'Map data © <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://www.mapbox.com">MapBox</a>'
+  },
+  osm: {
+    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: 'Map data and tiles © <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+  },
+  osmcycle: {
+    url: 'http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png',
+    attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://www.thunderforest.com">Thunderforest</a>'
+  },
+  osmtransport: {
+    url: 'http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png',
+    attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://www.thunderforest.com">Thunderforest</a>'
+  },
+  openmapserfer: {
+    url: 'http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}',
+    attribution: 'Map data © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://openmapsurfer.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a>'
+  },
+  hillshade: {
+    // ASTER GDEM & SRTM Hillshade layer
+    url: 'http://openmapsurfer.uni-hd.de/tiles/asterh/x={x}&y={y}&z={z}',
+    attribution: 'Overlay © <a href="http://openmapsurfer.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a>'
+  },
+  waymarkedtrails: {
+    url: 'http://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
+    attribution: 'Overlay © <a href="http://cycling.waymarkedtrails.org">cycling.waymarkedtrails.org</a>'
+  },
+  google: {
+    attribution: 'Map data and tiles © <a href="http://www.google.com">Google</a>'
+  }
+};
 
 var Layers = L.Control.extend({
   options: {
@@ -14,39 +46,39 @@ var Layers = L.Control.extend({
 
     var baseLayers = [{
       name: 'OpenMapSurfer',
-      constructor: function() { return L.tileLayer(cfg.maps.openmapserfer.url, {attribution: cfg.maps.openmapserfer.attribution}); },
+      constructor: function() { return L.tileLayer(info.openmapserfer.url, {attribution: info.openmapserfer.attribution}); },
     }, {
       name: 'OSM Standard',
-      constructor: function() { return L.tileLayer(cfg.maps.osm.url, {attribution: cfg.maps.osm.attribution}); }
+      constructor: function() { return L.tileLayer(info.osm.url, {attribution: info.osm.attribution}); }
     }, {
       name: 'OSM Cycle',
-      constructor: function() { return L.tileLayer(cfg.maps.osmcycle.url, {attribution: cfg.maps.osmcycle.attribution}); }
+      constructor: function() { return L.tileLayer(info.osmcycle.url, {attribution: info.osmcycle.attribution}); }
     }, {
       name: 'OSM Transport',
-      constructor: function() { return L.tileLayer(cfg.maps.osmtransport.url, {attribution: cfg.maps.osmtransport.attribution}); }
+      constructor: function() { return L.tileLayer(info.osmtransport.url, {attribution: info.osmtransport.attribution}); }
     }, {
       name: 'MapBox Terrain',
-      constructor: function() { return L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: cfg.maps.mapbox.attribution}); }
+      constructor: function() { return L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: info.mapbox.attribution}); }
     }, {
       name: 'Google Road',
       variants: ['bicycling', 'transit'],
-      constructor: function(variant) { return L.Google.tileLayer('ROADMAP', {layer: variant, attribution: cfg.maps.google.attribution}); }
+      constructor: function(variant) { return L.Google.tileLayer('ROADMAP', {layer: variant, attribution: info.google.attribution}); }
     }, {
       name: 'Google Terrain',
       variants: ['bicycling', 'transit'],
-      constructor: function(variant) { return L.Google.tileLayer('TERRAIN', {layer: variant, attribution: cfg.maps.google.attribution}); }
+      constructor: function(variant) { return L.Google.tileLayer('TERRAIN', {layer: variant, attribution: info.google.attribution}); }
     }, {
       name: 'Google Satellite',
       variants: ['bicycling', 'transit'],
-      constructor: function(variant) { return L.Google.tileLayer('HYBRID', {layer: variant, attribution: cfg.maps.google.attribution}); }
+      constructor: function(variant) { return L.Google.tileLayer('HYBRID', {layer: variant, attribution: info.google.attribution}); }
     }];
 
     var overlays = [{
       name: 'Cycling Routes',
-      constructor: function() { return L.tileLayer(cfg.maps.waymarkedtrails.url, {attribution: cfg.maps.waymarkedtrails.attribution}); }
+      constructor: function() { return L.tileLayer(info.waymarkedtrails.url, {attribution: info.waymarkedtrails.attribution}); }
     }, {
       name: 'Hillshade',
-      constructor: function() { return L.tileLayer(cfg.maps.hillshade.url, {attribution: cfg.maps.hillshade.attribution}); }
+      constructor: function() { return L.tileLayer(info.hillshade.url, {attribution: info.hillshade.attribution}); }
     }];
 
     this._layers = baseLayers;

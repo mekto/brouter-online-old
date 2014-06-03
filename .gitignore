@@ -3,5 +3,6 @@ node_modules
 *.sublime-*
 
 config.py
+config.js
 static/build/
 engine/

@@ -162,7 +162,12 @@ App.prototype = {
   },
 
   search: function(waypoint) {
-    this.geocoder.geocode({address: waypoint.address}, function(results, status) {
+    var bounds = this.map.getBounds(),
+      southWest = bounds.getSouthWest(),
+      northEast = bounds.getNorthEast();
+    bounds = new google.maps.LatLngBounds(new google.maps.LatLng(southWest.lat, southWest.lng),
+                                          new google.maps.LatLng(northEast.lat, northEast.lng));
+    this.geocoder.geocode({address: waypoint.address, bounds: bounds}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         this.setMarker(waypoint, new L.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
       }

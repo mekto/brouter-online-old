@@ -38,7 +38,7 @@ var Zoom = L.Control.extend({
     var status = this.control.get('locateStatus');
 
     if (status === 'off') {
-      this._map.locate({setView: true});
+      this._map.locate({setView: true, maxZoom: 17});
       this.control.set('locateStatus', 'searching');
     } else {
       this._stoplocate();

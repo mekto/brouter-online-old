@@ -8,6 +8,8 @@ var Ractive = require('Ractive'),
     Controls = require('./controls.js'),
     config = require('../../config.js');
 
+require('Ractive.decorators.sortable');
+
 
 function Waypoint() {
   this.address = '';

@@ -5,10 +5,11 @@
       <strong>BRouter</strong>
     </header>
     <div class="inner">
-      <ul>
+      <ul class="waypoints">
         {{#waypoints:i}}
-        <li>
+        <li decorator="sortable">
           <label>
+            <span class="pin"></span>
             <input type="text" value="{{ address }}" placeholder="{{#i==0}}Select starting point{{/i}}{{#i==waypoints.length-1}}End point{{/i}}" on-keydown="keydown">
           </label>
         </li>
@@ -62,7 +63,7 @@
           {{#yScaleTicks}}
           <g transform="translate(0, {{ yScale(this) }})">
             <line class="tick" x1="-5"/>
-            <text class="tick-label" x="-7" dy=".32em">{{ . }}</text> 
+            <text class="tick-label" x="-7" dy=".32em">{{ . }}</text>
           </g>
           {{/yScaleTicks}}
         </g>
@@ -74,7 +75,7 @@
           {{#xScaleTicks:i}}
           <g transform="translate({{ xScale(this) }}, 0)">
             <line class="tick" y2="5"/>
-            <text class="tick-label" y="5" dy="1em">{{ . }}</text> 
+            <text class="tick-label" y="5" dy="1em">{{ . }}</text>
           </g>
           {{/xScaleTicks}}
         </g>
@@ -103,7 +104,7 @@
 
     <text class="guide-label" x="3" y="9">{{ round(alt) }} m</text>
     <text class="guide-label" x="3" y="20">{{ round(dist, 2) }} km</text>
-    <circle cx="0" cy="57" r="2.5"/> 
+    <circle cx="0" cy="57" r="2.5"/>
   </g>
 </svg>
 <!-- {{/heightIndicator}} -->

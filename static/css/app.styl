@@ -28,12 +28,23 @@ body
     background-color: #fff; box-shadow: 1px 1px 1px rgba(black, .2); margin-bottom: ($line-height / 2);
     > .inner
       padding: ($line-height / 2) ($gutter / 2);
-  input[type=text]
-    width: 100%; padding: 7px 7px; margin: 4px 0; border: $border-color; color: $font-color; box-shadow: inset 1px 1px 1px -1px rgba(black, .1);
-    &:focus
-      border-color: $accent-color;
   .main footer
     display: flex;
+  .pin
+    display: inline-block; size: 14px; border-radius: 50% 50% 50% 0; background-color: yellow; margin-right: 5px; position: relative; cursor: grabbing; transform: rotate(-45deg);
+  .pin:after
+    size: 4px; absolute: left 5px top 5px; content: ''; border-radius: 50%; background-color: rgba(black, .5);
+  .waypoints
+    label
+      display: flex; align-items: center;
+    input[type=text]
+      flex: 1; padding: 7px 7px; margin: 4px 0; border: $border-color; color: $font-color; box-shadow: inset 1px 1px 1px -1px rgba(black, .1);
+      &:focus
+        border-color: $accent-color;
+    li:first-child .pin
+      background-color: blue;
+    li:last-child .pin
+      background-color: green;
 
 .stretch
   flex: 1;

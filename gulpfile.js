@@ -24,7 +24,8 @@ gulp.task('js', function() {
     },
     module: {
       loaders: [
-        { test: /\.html$/, loader: 'ractive' }
+        { test: /\.html$/, loader: 'ractive' },
+        { test: /\.svg$/, loader: 'raw' }
       ]
     }
   };
@@ -57,7 +58,7 @@ gulp.task('devserver', ['config:debug', 'config:livereload', 'css', 'js'], funct
   run('./engine/standalone/server.sh');
 
   gulp.watch('static/css/*.styl', ['css']);
-  gulp.watch(['static/js/**/*.js', 'static/js/**/*.html'], ['js']);
+  gulp.watch(['static/js/**/*.js', 'static/js/**/*.html', 'static/svg/*.svg'], ['js']);
 });
 
 

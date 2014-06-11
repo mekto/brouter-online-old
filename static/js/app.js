@@ -189,14 +189,25 @@ App.prototype = {
     }.bind(this));
   },
 
-  setMarker: function(waypoint, latlng) {
-    var waypointIndex = this.waypoints.indexOf(waypoint);
+  makeMarkerIcon: function(waypoint) {
+    var index = this.waypoints.indexOf(waypoint),
+        type = (index === 0) ? 'start' :
+               (index < this.waypoints.length - 1) ? 'via' : 'end';
 
+    return L.divIcon({
+      iconSize: [20, 32],
+      iconAnchor: [10, 32],
+      className: type + '-marker',
+      html: require('../svg/marker.svg')
+    });
+  },
+
+  setMarker: function(waypoint, latlng) {
     if (waypoint.marker)
       this.routeLayer.removeLayer(waypoint.marker);
 
     waypoint.marker = L.marker(latlng, {
-      icon: L.mapbox.marker.icon(this.config.markerIconStyles[(waypointIndex === 0) ? 'first' : 'last']),
+      icon: this.makeMarkerIcon(waypoint),
       draggable: true
     });
     waypoint.marker.waypoint = waypoint;  // reverse mapping

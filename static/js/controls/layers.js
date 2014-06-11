@@ -4,6 +4,7 @@ var utils = require('../utils');
 
 var info = {
   mapbox: {
+    url: 'https://{s}.tiles.mapbox.com/v3/mekto.hgp09m7l/{z}/{x}/{y}.png',
     attribution: 'Map data © <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>, Tiles © <a href="http://www.mapbox.com">MapBox</a>'
   },
   osm: {
@@ -58,7 +59,7 @@ var Layers = L.Control.extend({
       constructor: function() { return L.tileLayer(info.osmtransport.url, {attribution: info.osmtransport.attribution}); }
     }, {
       name: 'MapBox Terrain',
-      constructor: function() { return L.mapbox.tileLayer('mekto.hgp09m7l', {attribution: info.mapbox.attribution}); }
+      constructor: function() { return L.tileLayer(info.mapbox.url, {attribution: info.mapbox.attribution}); }
     }, {
       name: 'Google Road',
       variants: ['bicycling', 'transit'],

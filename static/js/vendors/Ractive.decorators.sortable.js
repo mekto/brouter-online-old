@@ -90,8 +90,10 @@
 		sourceKeypath,
 		sourceArray,
 		sourceIndex,
+		sorted,
 		dragstartHandler,
 		dragenterHandler,
+		dropHandler,
 		removeTargetClass,
 		preventDefault,
 		errorMessage;
@@ -102,7 +104,7 @@
 		node.addEventListener( 'dragstart', dragstartHandler, false );
 		node.addEventListener( 'dragenter', dragenterHandler, false );
 		node.addEventListener( 'dragleave', removeTargetClass, false );
-		node.addEventListener( 'drop', removeTargetClass, false );
+		node.addEventListener( 'drop', dropHandler, false );
 
 		// necessary to prevent animation where ghost element returns
 		// to its (old) home
@@ -113,7 +115,7 @@
 				node.removeEventListener( 'dragstart', dragstartHandler, false );
 				node.removeEventListener( 'dragenter', dragenterHandler, false );
 				node.removeEventListener( 'dragleave', removeTargetClass, false );
-				node.removeEventListener( 'drop', removeTargetClass, false );
+				node.removeEventListener( 'drop', dropHandler, false );
 				node.removeEventListener( 'dragover', preventDefault, false );
 			}
 		};
@@ -146,6 +148,8 @@
 
 		// keep a reference to the Ractive instance that 'owns' this data and this element
 		ractive = storage.root;
+
+		sorted = false;
 	};
 
 	dragenterHandler = function () {
@@ -189,6 +193,17 @@
 
 		// add source back to array in new location
 		array.splice( sourceIndex, 0, source );
+
+		sorted = true;
+	};
+
+	dropHandler = function () {
+		this.classList.remove( sortable.targetClass );
+		if (sorted) {
+			ractive.fire('sorted', sourceArray);
+		}
+		sourceArray = null;
+		sorted = false;
 	};
 
 	removeTargetClass = function () {

@@ -99,6 +99,13 @@ App.prototype = {
 
       findRoute: function() {
         this.findRoute({force: true});
+      }.bind(this),
+
+      sorted: function(keypath) {
+        if (keypath === 'waypoints') {
+          this.updateMarkerIcons();
+          this.findRoute();
+        }
       }.bind(this)
     });
 
@@ -226,6 +233,14 @@ App.prototype = {
         this.map.panTo(waypoint.marker.getLatLng());
     }
     this.toolbox.update();
+  },
+
+  updateMarkerIcons: function() {
+    this.waypoints.forEach(function(waypoint) {
+      if (waypoint.marker) {
+        waypoint.marker.setIcon(this.makeMarkerIcon(waypoint));
+      }
+    }, this);
   },
 
   lookupAddress: function(latlng, callback) {

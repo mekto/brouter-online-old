@@ -284,7 +284,7 @@ App.prototype = {
     this.line = L.Routing.line(coords);
     this.routeLayer.addLayer(this.line);
     if (options.fitBounds) {
-      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
+      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 38], paddingBottomRight: [30, 30] });
     }
 
     this.toolbox.setRouteInfo(this.waypoints, coords, distance);
@@ -308,7 +308,7 @@ App.prototype = {
       return waypoint.marker.getLatLng();
     });
     if (options.fitBounds) {
-      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 0] });
+      this.map.fitBounds(this.routeLayer.getBounds(), { paddingTopLeft: [290, 38], paddingBottomRight: [30, 30] });
     }
 
     var distance = this.distanceBetweenWaypoints();

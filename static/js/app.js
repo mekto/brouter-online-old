@@ -159,6 +159,15 @@ App.prototype = {
           this.map.closePopup();
           e.original.preventDefault();
         }.bind(this),
+
+        'setVia': function(e) {
+          var waypoint = new Waypoint();
+          this.waypoints.splice(1, 0, waypoint);
+          waypoint.address = this.formatAddress(result);
+          this.setMarker(waypoint, latlng);
+          this.map.closePopup();
+          e.original.preventDefault();
+        }.bind(this)
       });
 
       L.popup({ minWidth: 200 })
@@ -202,14 +211,18 @@ App.prototype = {
     }.bind(this));
   },
 
+  getWaypointPosition: function(waypoint) {
+    var index = this.waypoints.indexOf(waypoint);
+    return (index === 0) ? 'start' :
+           (index < this.waypoints.length - 1) ? 'via' : 'end';
+  },
+
   makeMarkerIcon: function(waypoint) {
-    var index = this.waypoints.indexOf(waypoint),
-        type = (index === 0) ? 'start' :
-               (index < this.waypoints.length - 1) ? 'via' : 'end';
+    var type = this.getWaypointPosition(waypoint);
 
     return L.divIcon({
-      iconSize: [20, 32],
-      iconAnchor: [10, 32],
+      iconSize: (type === 'via') ? [16, 26] : [20, 31],
+      iconAnchor: (type === 'via') ? [8, 26] : [10, 31],
       className: type + '-marker',
       html: require('../svg/marker.svg')
     });
@@ -228,6 +241,18 @@ App.prototype = {
 
     waypoint.marker.addEventListener('dragend', function(e) {
       this.searchAddressReverse(e.target);
+    }.bind(this));
+
+    waypoint.marker.addEventListener('click', function(e) {
+      var index = this.waypoints.indexOf(waypoint),
+          pos = this.getWaypointPosition(waypoint);
+      console.log(index, pos);
+      if (pos === 'via') {
+        this.routeLayer.removeLayer(waypoint.marker);
+        this.waypoints.splice(index, 1);
+        this.updateMarkerIcons();
+        this.findRoute();
+      }
     }.bind(this));
 
     if (this.canSearch()) {

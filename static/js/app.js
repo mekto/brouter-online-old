@@ -175,12 +175,18 @@ App.prototype = {
   },
 
   distanceBetweenWaypoints: function() {
-    return this.waypoints.reduce(function(first, second) {
-      if (first.marker && second.marker) {
-        return first.marker.getLatLng().distanceTo(second.marker.getLatLng());
-      }
-      return 0;
+    var distance = 0, i,
+        waypoints;
+
+    // filter out waypoints without markers
+    waypoints = this.waypoints.filter(function(waypoint) {
+      return waypoint.marker;
     });
+
+    for (i = 0; i < waypoints.length - 1; ++i) {
+      distance += waypoints[i].marker.getLatLng().distanceTo(waypoints[i+1].marker.getLatLng());
+    }
+    return distance;
   },
 
   search: function(waypoint) {

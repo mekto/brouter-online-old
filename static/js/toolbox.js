@@ -8,7 +8,7 @@ var Ractive = require('Ractive'),
 
 
 toolbox = module.exports = new Ractive({
-  template: template.main,
+  template: template,
   el: document.createElement('div'),
 });
 
@@ -61,7 +61,7 @@ toolbox.on({
 
       if (!heightIndicator) {
         heightIndicator = new Ractive({
-          template: template.partials.heightIndicator,
+          template: {v: template.v, t: template.p.heightIndicator},
           el: toolbox.map.getPanes().overlayPane,
           append: true,
           data: {

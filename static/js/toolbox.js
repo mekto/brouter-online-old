@@ -76,7 +76,7 @@ toolbox.on({
 
       el = heightIndicator.find('.height-indicator');
       pos = toolbox.map.latLngToLayerPoint(hover.point.latlng);
-      L.DomUtil.setPosition(el, pos.subtract([3, el.offsetHeight - 3]));
+      L.DomUtil.setPosition(el, pos.subtract([3, el.height.baseVal.value - 3]));
     }
   },
 
@@ -119,7 +119,8 @@ toolbox.setRouteInfo = function(waypoints, coords, distance) {
 toolbox._getHoverInfo = function(e) {
     var data = this.get('chart.data'),
         xInvertScale = this.get('chart.xInvertScale'),
-        pos = e.original.offsetX - 45,
+        offsetX = (e.original.hasOwnProperty('offsetX')) ? e.original.offsetX : e.original.layerX - e.original.target.viewportElement.parentElement.offsetLeft,
+        pos = offsetX - 45,
         dist = xInvertScale(pos),
         index = bisect(data.map(function(point) { return point.dist; }), dist),
         point = data[index];

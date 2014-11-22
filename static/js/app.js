@@ -67,7 +67,7 @@ App.prototype = {
     this.map.attributionControl.setPrefix('');
     this.map.attributionControl.addAttribution(
       '© <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>, ' +
-      'Routing © <a href="http://dr-brenschede.de/brouter/">BRouter</a>');
+      'Routing © <a href="http://brouter.de/brouter/">BRouter</a>');
 
     this.map.addEventListener('baselayerchange', function(e) {
       this.storage.activeOverlay = e.name;
